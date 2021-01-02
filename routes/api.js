@@ -16,11 +16,11 @@ ctx.body = 'api默认'
 router.get('/play',async (ctx)=>{
     // 验证是否关注
     const userInfo = await isAttention(ctx)
-    // console.log(ctx.header);
+    // 用户未登录
     if(!userInfo) {
         ctx.body={
-            code: -1,
-            msg: '您还未关注登录，无法使用，请先关注！'
+            code: 1001,
+            msg: 'success'
         }
         return
     }

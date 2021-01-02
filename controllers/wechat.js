@@ -7,7 +7,7 @@ const MPConfig = require('../utils/wechat/helper').MP
 const got = require('got')
 const qr = require('../vendor/qr')
 const fs = require('fs')
-const pathResolve = require('path').resolve
+const DB = require('../db/db')
 
 const MP = new Wechat(MPConfig)
 
@@ -53,13 +53,21 @@ module.exports = async (ctx, next) => {
         console.log(eventKey);
         // 有场景值（扫了我们生成的二维码）
         let user = await MP.handle('getUserInfo', userID)
-        // console.log(user);
+        const wxInfo = {
+          "avatar": user.headimgurl,
+          "sex": user.sex,
+          "name": user.nickname,
+          "openId": user.openid
+        }
+        console.log(user);
         let userInfo = `${user.nickname}（${user.sex ? '男' : '女'}, ${user.country}${user.province}${user.city}）`
         if (eventKey.slice(0, 8) === 'qrscene_') {
           // 扫码并关注
           // 关注就创建帐号的话可以在这里把用户信息写入数据库完成用户注册
           eventKey = eventKey.slice(8)
-          console.log(userInfo + '扫码并关注了公众号')
+          console.log(userInfo + '扫码并关注了公众号，准备写入数据库')
+          const res = await DB.insert('userInfo', { 'wxInfo': wxInfo })
+          console.log('写入成功');
         } else {
           // 已关注
           console.log(userInfo + '扫码进入了公众号')
@@ -70,7 +78,9 @@ module.exports = async (ctx, next) => {
         //             // .hset(eventKey, 'unionID', user.unionid || '') // 仅unionid机制下有效
         //             .hset(eventKey, 'openID', user.openid)
         //             .exec()
+        console.log('准备在redis设置openid')
         await redis.hset(eventKey, 'openID', user.openid)
+        await redis.expire(eventKey, 172800)
       }
     }
 
@@ -91,7 +101,7 @@ async function subscribe (message) {
   }
 }
 
-const templetData = fs.readFileSync(pathResolve(__dirname, '../vendor/qrcode-templet.html'))
+// const templetData = fs.readFileSync(pathResolve(__dirname, '../vendor/qrcode-templet.html'))
 
 async function createQRCodeMB (ctx, next) {
   let userID = ctx.query.userID
@@ -144,15 +154,24 @@ async function createQRCodeMB (ctx, next) {
 
 async function sweepVerificationCode(ctx, next) {
   let eventKey = ctx.query.id
-  const res = await redis.hget(eventKey, 'openID')
-  if(!res) {
+  const openId = await redis.hget(eventKey, 'openID')
+  if(!openId) {
+    ctx.body={ errno: 1 }
+    return
+  }
+  const userInfo = await DB.find('userInfo', {"wxInfo.openId": openId})
+  if(!userInfo){
     ctx.body={ errno: 1 }
     return
   }
   // 扫码通过  进行cookie发送
   ctx.cookies.set('eventKey', eventKey, cookieConfig)
-  ctx.cookies.set('openID', res, { maxAge:60*1000*60 })
-  ctx.body={ errno:0 }
+  ctx.cookies.set('openID', openId, cookieConfig)
+  ctx.cookies.set('avatar', userInfo[0].wxInfo.avatar, cookieConfig)
+  ctx.cookies.set('name', userInfo[0].wxInfo.name, cookieConfig)
+  ctx.body={ 
+    errno:0
+  }
 }
 
 module.exports.createQRCodeMB = createQRCodeMB

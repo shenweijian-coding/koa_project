@@ -5,8 +5,8 @@ const app = {
 }
 // cookie
 const cookieConfig = {
-  maxAge: 1000 * 60 * 3,            // 一个数字表示从 Date.now() 得到的毫秒数
-  expires: new Date() + 1000 * 60,        // 过期的 Date,如不设置就和session类似，关闭浏览器此cookie失效
+  maxAge:172800000,            // 一个数字表示从 Date.now() 得到的毫秒数
+  // expires: new Date() + 1000 * 60,        // 过期的 Date,如不设置就和session类似，关闭浏览器此cookie失效
   path: '/',                  // 路径, 默认是'/'
   domain: '',                // 域名
   secure: false,              // 安全 cookie   默认false，设置成true表示只有 https可以访问
@@ -34,5 +34,8 @@ const CACHE = {
   host: 'localhost',
   port: 6379
 }
-
-module.exports = { app, WXMP, CACHE }
+/**
+ * 1001  用户未登录
+ * 
+ */
+module.exports = { app, WXMP, CACHE, cookieConfig }
