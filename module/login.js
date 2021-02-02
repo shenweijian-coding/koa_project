@@ -1,3 +1,4 @@
+const { redis } = require('../utils/dbHelper')
 function isAttention(ctx){
   return new Promise( async(resolve, reject)=>{
     // 获取cookie内容

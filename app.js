@@ -3,7 +3,7 @@ const Koa=require('koa')
 const router=require('koa-router')()
 const cors = require('koa2-cors')
 const XMLParser = require('./middlewares/XMLParser')
-
+const bodyParser= require('koa-bodyparser')
 //引入子模块
 var admin=require('./routes/admin.js');
 var api=require('./routes/api.js');
@@ -16,7 +16,7 @@ app.use(cors({
 }));
 // xml转换json
 app.use(XMLParser)
-
+app.use(bodyParser());      // 将模块作为koa的中间件引入
 /*
   /admin   配置子路由  层级路由
  /admin/user

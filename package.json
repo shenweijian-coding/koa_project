@@ -17,7 +17,7 @@
     "ioredis": "^4.10.0",
     "koa": "^2.5.0",
     "koa-art-template": "^1.1.1",
-    "koa-bodyparser": "^4.2.0",
+    "koa-bodyparser": "^4.3.0",
     "koa-router": "^7.4.0",
     "koa-session": "^5.8.1",
     "koa-static": "^4.0.2",
