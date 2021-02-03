@@ -19,7 +19,7 @@ async function shida(reqData) {
       const res = await request({
         url:'https://shida66.com/?c=VideoInfo&a=getNowPlayUrl',
         method: 'POST',
-        data:vid,
+        data: vid,
         headers:{
           'Cookie':Cookie
         }

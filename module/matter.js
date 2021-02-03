@@ -33,33 +33,36 @@ async function miyuansu(reqData) {
         }
       })
       console.log(res)
-      resolve(res)
+      resolve(res.url)
     } catch (error) {
       reject(error)
     }
   })
 }
 // 图克巴巴
-function tukebaba() {
+async function tukebaba(reqData) {
+  const { d } = reqData // 获取素材id
+  const t = new Date().getTime()
+  const url = `http://www.tuke88.com/index/down?callback=jQuery17103538063143495809_1611489882849&pid=${d}&_=${t}`
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'tukebaba' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
   return new Promise(async (resolve, reject) => {
     try {
-      const pid = 'k9g54ykgv1'
-      const timestamp = new Date().getTime()
-      const url = `http://www.tuke88.com/index/down?callback=jQuery17103538063143495809_1611489882849&pid=${pid}&_=${timestamp}`
-      // {
-      //   "status": 1,
-      //   "downurl": "http://file03.tuke88.com/202101242007/56a525c0a1fae7892a5a39fc3969b971/zip/10/00/04/5/5c51515eaf10b.zip"
-      // }
-      const cookie = ''
       const res = await request({
         url: url,
         headers: {
           Cookie: cookie
         }
       })
-      resolve(res)
+      console.log(res)
+      const downurl = JSON.parse(res.match(/{(\S*)}/)[0]).downurl
+      console.log(downurl);
+      resolve(downurl)
     } catch (error) {
-
+      reject(error)
     }
   })
 }
@@ -104,12 +107,29 @@ function shetu() {
   })
 }
 // 昵图
-function nitu() {
+async function nitu(reqData) {
+  const { a, d } = reqData
+  const url = 'http://down.nipic.com/ajax/download_go'
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'nitu' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
   return new Promise((resolve, reject) => {
     try {
-
+      const res = await request({
+        url: url,
+        method: 'POST',
+        data: {id: d, kid: a},
+        headers: {
+          Cookie: cookie,
+          'X-Requested-With': 'XMLHttpRequest'
+        }
+      })
+      console.log(res)
+      resolve(res)
     } catch (error) {
-
+      reject(error)
     }
   })
 }
