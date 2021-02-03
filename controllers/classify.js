@@ -1,6 +1,6 @@
 // import { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip } from "../module/matter"
 // import { huke, shida } from "../module/video"
-const { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip } = require('../module/matter')
+const { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip, xiongmao } = require('../module/matter')
 const { huke, shida } = require('../module/video')
 module.exports = async function sort(ctx) {
   const { reqData, urlType } = ctx
