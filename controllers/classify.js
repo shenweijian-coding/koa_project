@@ -3,53 +3,53 @@
 const { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip } = require('../module/matter')
 const { huke, shida } = require('../module/video')
 module.exports = async function sort(ctx) {
-  const { urlLink, urlType } = ctx
-  console.log(urlLink, urlType);
+  const { reqData, urlType } = ctx
+  console.log(reqData, urlType);
   let resData
   // 根据传过来的ctx判断是哪个网站的链接
   // const siteInfo = ['shida', 'huke', '51yuansu', 'nipic', '16pic', 'tukuppt', '699pic', '90sheji', 'ooopic']
   switch (urlType) {
     case 10: // 视达
-      resData = await shida(urlLink)
+      resData = await shida(reqData)
       break;
     case 11: // 虎课
-      resData = await huke(urlLink)
+      resData = await huke(reqData)
       break;
     case 12: // 千图
-      resData = await qiantu(urlLink)
+      resData = await qiantu(reqData)
       break; // 千库
     case 13:
-      resData = await qianku(urlLink)
+      resData = await qianku(reqData)
       break;
     case 14: // 包图
-      resData = await baotu(urlLink)
+      resData = await baotu(reqData)
       break;
     case 15: // 摄图
-      resData = await shetu(urlLink)
+      resData = await shetu(reqData)
       break;
     case 16: // 昵图
-      resData = await nitu(urlLink)
+      resData = await nitu(reqData)
       break;
     case 17: // 90设计
-      resData = await sheji90(urlLink)
+      resData = await sheji90(reqData)
       break;
     case 18: // 六图
-      resData = await liutu(urlLink)
+      resData = await liutu(reqData)
       break;
     case 19: // 熊猫
-      resData = await xiongmao(urlLink)
+      resData = await xiongmao(reqData)
       break;
     case 20: // 图克巴巴
-      resData = await tukebaba(urlLink)
+      resData = await tukebaba(reqData)
       break;
     case 21: // 图精灵
-      resData = await tujingling(urlLink)
+      resData = await tujingling(reqData)
       break;
     case 22: // 我图VIP
-      resData = await wotuvip(urlLink)
+      resData = await wotuvip(reqData)
       break;
     case 23: // 觅元素
-      resData = await miyuansu(urlLink)
+      resData = await miyuansu(reqData)
       break;
     default:
       resData = { msg:'未找到对应site' }

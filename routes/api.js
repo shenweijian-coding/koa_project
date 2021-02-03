@@ -46,7 +46,7 @@ router.post('/matter', async (ctx)=>{
         return
     }
     // 调用解析
-    const res = await sort(ctx)
+    const res = await sort(ctx.request.body)
     ctx.body ={
         data:'success',
         res
