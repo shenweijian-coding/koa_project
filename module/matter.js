@@ -67,6 +67,42 @@ async function tukebaba(reqData) {
     }
   })
 }
+// 觅知网
+async function mizhi(reqData) {
+  /**
+   * {
+   * d:id,
+   * a:plate_id,
+   * t:2
+   * }
+   */
+  const { d, a } = reqData // 获取素材id
+  const url = `https://download.51miz.com/?m=download&a=download&id=${d}&plate_id=${a.a}&format=${a.f}`
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'mizhi' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
+  return new Promise(async (resolve, reject) => {
+    console.log('url', url);
+    try {
+      const res = await request({
+        url: url,
+        maxRedirects: 0,
+        headers: {
+          Cookie: cookie, 
+        }
+      })
+      // https://down.51miz.com/ 代理转发
+      // http://127.0.0.1/element/00/89/58/41/51miz-E895841-B39F85F7.png
+      downurl = res.replace('https://down.51miz.com','http://127.0.0.1:3001')
+      console.log(downurl)
+      resolve(downurl)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
 // 千图
 function qiantu() {
   return new Promise((resolve, reject) => {
@@ -98,15 +134,15 @@ async function baotu(reqData) {
   if (!cookie) return
   return new Promise(async(resolve, reject) => {
     try {
-      const res = await axios({
+      const res = await request({
         url:url,
+        maxRedirects: 0,
         headers:{
           Cookie:cookie,
-          
         }
       })
-      console.log(res.headers);
-      resolve(res.headers.Location)
+      console.log(res)
+      resolve(res)
     } catch (error) {
       reject(error)
     }
@@ -246,5 +282,6 @@ module.exports = {
   shetu,
   baotu,
   qianku,
-  qiantu
+  qiantu,
+  mizhi
 }

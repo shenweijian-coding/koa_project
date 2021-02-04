@@ -5,11 +5,12 @@ const cors = require('koa2-cors')
 const XMLParser = require('./middlewares/XMLParser')
 const bodyParser= require('koa-bodyparser')
 //引入子模块
-var admin=require('./routes/admin.js');
-var api=require('./routes/api.js');
+var admin=require('./routes/admin.js')
+var api=require('./routes/api.js')
 var wechat = require('./routes/wechat')
 var app=new Koa();
-
+// 代理转发
+// 解决跨域
 app.use(cors({
   origin: 'http://localhost:8080',    // 前端地址
   credentials: true
