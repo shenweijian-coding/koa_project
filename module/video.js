@@ -25,6 +25,8 @@ async function shida(reqData) {
           'Cookie':Cookie
         }
       })
+      if(!res.url) resolve({})
+      console.log(res);
       // 携带上vid
       res.vid = vid
       res.isShowDown = isShowDown
@@ -38,7 +40,29 @@ async function shida(reqData) {
 async function huke() {
  
 }
+// 视频素材下载
+async function videoFileDown(reqData){
+  const { vid, sid } = reqData
+  return new Promise(async (resolve,reject)=>{
+    // 查找视达cookie
+    const result = await DB.find('cookie',{ name:'shida' })
+    console.log('开始查找cookie')
+    const Cookie = result[0].cookie
+    if(!Cookie) return
+    const res = await request({
+      url:`https://shida66.com/?c=VideoInfo&a=hasPlayPower&vid=${vid}&sid=${sid}&cid=508&fake=2`,
+      headers:{
+        Cookie:Cookie,
+        'X-Requested-With': 'XMLHttpRequest'
+      }
+    })
+    console.log(res);
+    if(!res.source) resolve({})
+    resolve(res.source)
+  })
+}
 module.exports={
   shida,
-  huke
+  huke,
+  videoFileDown
 }
