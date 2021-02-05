@@ -90,12 +90,12 @@ async function mizhi(reqData) {
         url: url,
         maxRedirects: 0,
         headers: {
-          Cookie: cookie, 
+          Cookie: cookie,
         }
       })
       // https://down.51miz.com/ 代理转发
       // http://127.0.0.1/element/00/89/58/41/51miz-E895841-B39F85F7.png
-      downurl = res.replace('https://down.51miz.com','http://127.0.0.1:3001')
+      downurl = res.replace('https://down.51miz.com', 'http://127.0.0.1:3001')
       console.log(downurl)
       resolve(downurl)
     } catch (error) {
@@ -132,13 +132,13 @@ async function baotu(reqData) {
   console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const res = await request({
-        url:url,
+        url: url,
         maxRedirects: 0,
-        headers:{
-          Cookie:cookie,
+        headers: {
+          Cookie: cookie,
         }
       })
       console.log(res)
@@ -149,12 +149,84 @@ async function baotu(reqData) {
   })
 }
 // 摄图
-function shetu() {
-  return new Promise((resolve, reject) => {
+async function shetu(reqData) {
+  // 先获取素材类型
+  const { urlLink = null, p = null, b = null, t = null, f = null, } = reqData
+  if(!urlLink) return
+  let repData = ''
+  // 如果有值 说明是获取素材类别
+  if (urlLink.includes('699pic')) {
+    const source = await request({ url: urlLink })
+    const type = source.match(/data-type="(\S*)"><span>/)[0]
+    if (type.includes('photo')) { // 照片
+      repData = 1
+    } else if (type.includes('originality')) {// 创意背景
+      repData = 2
+    } else if (type.includes('gif')) { // gif图
+      repData = 3
+    } else if (type.includes('chahua')) { // 插画
+      repData = 4
+    } else if (type.includes('ppt')) {// ppt
+      repData = 5
+    } else if (type.includes('vector')) {// 设计模板
+      repData = 6
+    } else if (type.includes('yuansu')) { // 免扣元素
+      repData = 7
+    } else if (type.includes('video')) {
+      repData = 8
+    } else if (type.includes('music')) {
+      repData = 9
+    } else if (type.includes('peitu')) {
+      repData = 10
+    }
+    return Promise.resolve(repData)
+  }
+  // 没有值 说明是获取下载链接的
+  /**
+   * p-->pid
+   * b-->byso
+   * b-->ycate
+   * f-->fileType  1-->  download/getDownloadUrl  2-->  newdownload/design  3-->newdownload/yuansu  4-->download/video?id=
+   *               5 --> music/download  6--> newdownload/phoneMap
+  */
+  let reqShetuData = ''
+  if (urlLink.includes('video')) {
+    reqShetuData = `fileType=${f}&page_num=1&download_from=186&video_rate=2`
+  } else if (urlLink.includes('music')) {
+    reqShetuData = `music_id=${p}&type=1&sid=0&page=0`
+  } else {
+    reqShetuData = `pid=${p}&byso=0&bycat=${t}&filetype=${f}`
+  }
+  // 根据type的参数 拼接对应的url
+  let url = `https://699pic.com/${urlLink}`
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'shetu' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
+  return new Promise(async (resolve, reject) => {
+    console.log('提交参数:', reqShetuData);
+    console.log("提交地址", url);
     try {
-
+      const res = await request({
+        url: url,
+        method: 'POST',
+        headers: {
+          Cookie:cookie,
+          'x-requested-with': 'XMLHttpRequest'
+        },
+        data:reqShetuData
+      })
+      console.log(res);
+      if(res.hasOwnProperty('url')){
+        resolve(res.url)
+      }else if(res.hasOwnProperty('src')){
+        resolve(res.src)
+      }else{
+        resolve()
+      }
     } catch (error) {
-
+      reject(error)
     }
   })
 }
@@ -172,7 +244,7 @@ async function nitu(reqData) {
       const res = await request({
         url: url,
         method: 'POST',
-        data:`id=${d}&kid=${a}`,
+        data: `id=${d}&kid=${a}`,
         headers: {
           Cookie: cookie,
           'X-Requested-With': 'XMLHttpRequest'
@@ -200,11 +272,11 @@ async function sheji90(reqData) {
         url: url,
         method: 'POST',
         headers: {
-          Cookie:cookie,
+          Cookie: cookie,
           'X-Requested-With': 'XMLHttpRequest',
-          'Referer':`http://90sheji.com/?m=Inspire&a=download&id=${d}`
+          'Referer': `http://90sheji.com/?m=Inspire&a=download&id=${d}`
         },
-        data:`id=${d}`
+        data: `id=${d}`
       })
       console.log(res)
       resolve(res.link)
@@ -233,12 +305,12 @@ async function xiongmao(reqData) {
   console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
-  return new Promise(async(resolve, reject) => {
+  return new Promise(async (resolve, reject) => {
     try {
       const res = await request({
-        url:url,
-        headers:{
-          Cookie:cookie,
+        url: url,
+        headers: {
+          Cookie: cookie,
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
@@ -250,7 +322,7 @@ async function xiongmao(reqData) {
   })
 }
 // 图精灵
-function tujingling() {
+function tujingling(reqData) {
   return new Promise((resolve, reject) => {
     try {
 
@@ -260,10 +332,25 @@ function tujingling() {
   })
 }
 // 我图
-function wotuvip() {
-  return new Promise((resolve, reject) => {
+async function wotuvip(reqData) {
+  const { d } = reqData
+  const url = `https://downloads.ooopic.com/down_newfreevip.php?action=down&id=${d}&token=&_Track=657370b92f802e1f655d0c780db69fca&detailv=`
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'wotu' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
+  return new Promise(async (resolve, reject) => {
     try {
-
+      const res = await request({
+        url: url,
+        maxRedirects: 0,
+        headers: {
+          Cookie: cookie
+        }
+      })
+      console.log(res)
+      resolve(res)
     } catch (error) {
 
     }

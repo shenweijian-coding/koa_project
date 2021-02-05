@@ -9,10 +9,10 @@ const request = require('./utils/request')
 // const downurl = JSON.parse(url.match(/{(\S*)}/)[0]).downurl
 // console.log(downurl);
 request({
-  url:'https://shida66.com/8046.html'
+  url:'https://699pic.com/tupian-500618976.html'
 }).then(res=>{
-  const source = /素材\+源文件下载/.test(res)
-  console.log(source);
+  const res2 = res.match(/data-type="(\S*)"><span>/)[0]
+  console.log(res2);
 },err=>{
   console.log(err);
 })
