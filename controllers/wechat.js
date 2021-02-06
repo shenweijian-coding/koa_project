@@ -155,21 +155,25 @@ async function createQRCodeMB (ctx, next) {
 async function sweepVerificationCode(ctx, next) {
   let eventKey = ctx.query.id
   const openId = await redis.hget(eventKey, 'openID')
+  console.log(openId);
   if(!openId) {
     ctx.body={ errno: 1 }
     return
   }
   const userInfo = await DB.find('userInfo', {"wxInfo.openId": openId})
-  if(!userInfo){
+  if(!userInfo.length){
     ctx.body={ errno: 1 }
     return
   }
+  // 将用户名编码
+  let userName = new Buffer(userInfo[0].wxInfo.name).toString('base64')
+  console.log(userInfo)
   // 扫码通过  进行cookie发送
   ctx.cookies.set('eventKey', eventKey, cookieConfig)
   ctx.cookies.set('openID', openId, cookieConfig)
   ctx.cookies.set('avatar', userInfo[0].wxInfo.avatar, cookieConfig)
-  ctx.cookies.set('name', userInfo[0].wxInfo.name, cookieConfig)
-  ctx.body={ 
+  ctx.cookies.set('name', userName, cookieConfig)
+  ctx.body={
     errno:0
   }
 }

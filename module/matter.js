@@ -168,7 +168,7 @@ async function shetu(reqData) {
       repData = 4
     } else if (type.includes('ppt')) {// ppt
       repData = 5
-    } else if (type.includes('vector')) {// 设计模板
+    } else if (type.includes('muban')) {// 设计模板
       repData = 6
     } else if (type.includes('yuansu')) { // 免扣元素
       repData = 7
@@ -322,12 +322,25 @@ async function xiongmao(reqData) {
   })
 }
 // 图精灵
-function tujingling(reqData) {
-  return new Promise((resolve, reject) => {
+async function tujingling(reqData) {
+  const {d, a} = reqData
+  return new Promise(async (resolve, reject) => {
+     // 查找cookie
+    const result = await DB.find('cookie', { name: 'tujingling' })
+    console.log('开始查找cookie');
+    const cookie = result[0].cookie
+    if (!cookie) return
     try {
-
+      const res = await request({
+        url:`http://616pic.com/api/download?id=${d}&type=${a}&code=`,
+        headers:{
+          Cookie:cookie
+        }
+      })
+      console.log(res)
+      resolve(res.url)
     } catch (error) {
-
+      reject(error)
     }
   })
 }
