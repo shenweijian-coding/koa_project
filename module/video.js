@@ -37,8 +37,45 @@ async function shida(reqData) {
   })
 }
 // 虎课网
-async function huke() {
- 
+async function huke(reqData) {
+  // 查找视达cookie
+  const result = await DB.find('cookie',{ name:'huke' })
+  console.log('开始查找cookie')
+  const Cookie = result[0].cookie
+  if(!Cookie) return
+  // 获取视频链接 必须是手机链接
+  let { urlLink } = reqData
+  urlLink = urlLink.replace('huke88.com', 'm.huke88.com')
+  const hukeId = urlLink.match(/course\/(\S*)\.html/)[1]
+  console.log(urlLink);
+  const hukeSource =  await request({
+    url:urlLink,
+    headers: {
+      Cookie: Cookie
+    }
+  })
+  let _csrfFrontend = hukeSource.match(/csrf-token" content="(\S*)"/)[1]
+  console.log(hukeId, _csrfFrontend);
+  const url = `https://m.huke88.com/video/video-url`
+
+  return new Promise(async(resolve, reject)=>{
+    try {
+      const res = await request({
+        url: url,
+        method: 'POST',
+        headers: {
+          Cookie: Cookie,
+          'X-Requested-With': 'XMLHttpRequest'
+        },
+        data: `id=${hukeId}&_csrf-frontend=${_csrfFrontend}`
+        // data: 'id=67251&_csrf-frontend=HtUJbRqTYfV7LorYYVyuPLhPctnqT8ODZhT5tXQYWThPr0ccKukgkExvuI8CC8d1jgFClJs49NQtLc7NQH86Uw%3D%3D'
+      })
+      console.log(res)
+      resolve(res.data.videoUrl)
+    } catch (error) {
+      reject(error)
+    }
+  })
 }
 // 视频素材下载
 async function videoFileDown(reqData){

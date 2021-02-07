@@ -166,7 +166,7 @@ async function sweepVerificationCode(ctx, next) {
     return
   }
   // 将用户名编码
-  let userName = new Buffer(userInfo[0].wxInfo.name).toString('base64')
+  let userName = Buffer.from(userInfo[0].wxInfo.name).toString('base64')
   console.log(userInfo)
   // 扫码通过  进行cookie发送
   ctx.cookies.set('eventKey', eventKey, cookieConfig)

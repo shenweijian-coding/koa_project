@@ -9,9 +9,9 @@ const request = require('./utils/request')
 // const downurl = JSON.parse(url.match(/{(\S*)}/)[0]).downurl
 // console.log(downurl);
 request({
-  url:'https://699pic.com/tupian-500618976.html'
+  url:'https://huke88.com/course/67312.html'
 }).then(res=>{
-  const res2 = res.match(/data-type="(\S*)"><span>/)[0]
+  const res2 = res.match(/csrf-token" content="(\S*)"/)[1]
   console.log(res2);
 },err=>{
   console.log(err);

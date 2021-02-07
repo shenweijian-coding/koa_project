@@ -104,14 +104,10 @@ async function mizhi(reqData) {
   })
 }
 // 千图
-function qiantu() {
-  return new Promise((resolve, reject) => {
-    try {
-
-    } catch (error) {
-
-    }
-  })
+async function qiantu(reqData) {
+  // 搞定第三方
+  const res = gaoding(reqData.urlLink)
+  return res
 }
 // 千库
 function qianku() {
@@ -369,7 +365,26 @@ async function wotuvip(reqData) {
     }
   })
 }
-
+// 第三方解析程序 ---搞定素材
+async function gaoding(url) {
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'gaoding' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
+  return new Promise(async (resolve, reject)=>{
+    const res = await request({
+      url: 'https://gaodings.com/index/index/parse.html',
+      method: 'POST',
+      data: `link=${url}&code=`,
+      headers: {
+        Cookie: cookie
+      }
+    })
+    console.log(res)
+    resolve(res.urlList['立即下载'])
+  })
+}
 module.exports = {
   miyuansu,
   tukebaba,
