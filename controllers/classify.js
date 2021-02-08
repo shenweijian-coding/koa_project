@@ -21,7 +21,7 @@ module.exports = async function sort(ctx) {
     case 12: // 千图
       resData = await qiantu(reqData)
       break; // 千库
-    case 13:
+    case 13: // 千库网
       resData = await qianku(reqData)
       break;
     case 14: // 包图
