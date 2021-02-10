@@ -6,7 +6,7 @@ async function shida(reqData) {
   // 先查看url是否携带vid 没有则查找 有则直接用
   const { urlLink } = reqData
   const shidaSource =  await request({url:urlLink})
-  let vid = shidaSource.match(/Params.vid = '(\S*)';/)[0].replace(/[^0-9]/ig,'')
+  let vid = shidaSource.match(/Params.vid = '(\S*)';/)[1]
   let isShowDown = /素材\+源文件下载/.test(shidaSource)
   let d = `vid=${vid}`
   // 查找视达cookie
@@ -71,13 +71,16 @@ async function huke(reqData) {
         // data: 'id=67251&_csrf-frontend=HtUJbRqTYfV7LorYYVyuPLhPctnqT8ODZhT5tXQYWThPr0ccKukgkExvuI8CC8d1jgFClJs49NQtLc7NQH86Uw%3D%3D'
       })
       console.log(res)
-      resolve(res.data.videoUrl)
+      res.data.sign = _csrfFrontend
+      res.data.d = hukeId
+      // res.data.isShowDown = isShowDown
+      resolve(res.data)
     } catch (error) {
       reject(error)
     }
   })
 }
-// 视频素材下载
+// 视频素材下载 视达
 async function videoFileDown(reqData){
   const { vid, sid } = reqData
   return new Promise(async (resolve,reject)=>{
@@ -98,8 +101,43 @@ async function videoFileDown(reqData){
     resolve(res.source)
   })
 }
+// 视频素材下载 虎课网
+async function fileDownHuke(reqData) {
+  return new Promise(async(resolve,reject)=>{
+    try {
+    // 查找视达cookie
+    const result = await DB.find('cookie',{ name:'huke' })
+    console.log('开始查找cookie')
+    const Cookie = result[0].cookie
+    if(!Cookie) return
+    const { d , type, urlLink } = reqData
+    const hukeSource =  await request({
+      url:urlLink,
+      headers: {
+        Cookie: Cookie
+      }
+    })
+    let sign = hukeSource.match(/csrf-token" content="(\S*)"/)[1]
+    console.log(sign);
+    const res = await request({
+      url:'https://huke88.com/download/ajax-download-source-case',
+      method:'POST',
+      data: `id=66688&type=${type}&studySourceId=1&confirm=0&_csrf-frontend=${sign}`,
+      headers: {
+        Cookie: Cookie
+      }
+    })
+    console.log(res);
+    if(!res) resolve({})
+    resolve(res.download_url)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
 module.exports={
   shida,
   huke,
-  videoFileDown
+  videoFileDown,
+  fileDownHuke
 }

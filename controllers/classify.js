@@ -1,7 +1,7 @@
 // import { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip } from "../module/matter"
 // import { huke, shida } from "../module/video"
-const { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip, xiongmao, mizhi } = require('../module/matter')
-const { huke, shida, videoFileDown } = require('../module/video')
+const { baotu, liutu, miyuansu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip, xiongmao, mizhi } = require('../module/matter')
+const { huke, shida, videoFileDown, fileDownHuke } = require('../module/video')
 module.exports = async function sort(ctx) {
   const { reqData, urlType } = ctx
   console.log(reqData, urlType);
@@ -9,6 +9,9 @@ module.exports = async function sort(ctx) {
   // 根据传过来的ctx判断是哪个网站的链接
   // const siteInfo = ['shida', 'huke', '51yuansu', 'nipic', '16pic', 'tukuppt', '699pic', '90sheji', 'ooopic']
   switch (urlType) {
+    case 8: // 视频素材下载
+      resData = await fileDownHuke(reqData)
+      break
     case 9: // 视频素材下载
       resData = await videoFileDown(reqData)
       break
@@ -29,9 +32,6 @@ module.exports = async function sort(ctx) {
       break;
     case 15: // 摄图
       resData = await shetu(reqData)
-      break;
-    case 16: // 昵图
-      resData = await nitu(reqData)
       break;
     case 17: // 90设计
       resData = await sheji90(reqData)
