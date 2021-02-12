@@ -59,6 +59,25 @@ module.exports = async (ctx, next) => {
           "name": user.nickname,
           "openId": user.openid
         }
+        const webInfo = {
+          "memberType": 0,
+          "dueTime": "2021-01-01",
+          "nitufen": 0,
+          "qiantuNum": 10,
+          "liutuNum": 10,
+          "baotuNum": 10,
+          "sheji90Num": 10,
+          "xiongmaoNum": 10,
+          "qiankuNum": 10,
+          "shetuNum": 10,
+          "tukeNum": 10,
+          "miyuansuNum": 10,
+          "wotuNum": 10,
+          "shidaNum": 10,
+          "hukeNum": 10,
+          "mizhiNum": 10,
+          "tujinglingNum": 10
+        }
         console.log(user);
         let userInfo = `${user.nickname}（${user.sex ? '男' : '女'}, ${user.country}${user.province}${user.city}）`
         if (eventKey.slice(0, 8) === 'qrscene_') {
@@ -66,7 +85,7 @@ module.exports = async (ctx, next) => {
           // 关注就创建帐号的话可以在这里把用户信息写入数据库完成用户注册
           eventKey = eventKey.slice(8)
           console.log(userInfo + '扫码并关注了公众号，准备写入数据库')
-          const res = await DB.insert('userInfo', { 'wxInfo': wxInfo })
+          await DB.insert('userInfo', { 'wxInfo': wxInfo, 'webInfo': webInfo })
           console.log('写入成功');
         } else {
           // 已关注

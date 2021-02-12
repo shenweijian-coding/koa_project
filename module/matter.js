@@ -253,7 +253,7 @@ async function nitu(ctx) {
       console.log(nitufen);
       const userNitufen = userInfo[0].webInfo.nitufen
       console.log(userNitufen);
-      if (userNitufen < nitufen) return resolve('昵图共享分不足')
+      if (userNitufen < nitufen) resolve('昵图共享分不足')
       console.log('不再执行');
       const res = await request({
         url: url,
@@ -264,7 +264,7 @@ async function nitu(ctx) {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      if(!res.data.url) return resolve('服务器错误')
+      if(!res.data.url)  resolve('服务器错误')
       // 将昵图分减去相应
       console.log(userNitufen - nitufen)
       await DB.update("userInfo", {"wxInfo.openId":openID},{ "webInfo.nitufen":userNitufen - nitufen})

@@ -31,16 +31,18 @@ const dayjs = require('dayjs')
 //   })
 // })
 
-// const day01 = dayjs().format('YYYY-MM-DD')
+// const day01 = '2021-01-04'
+console.log(dayjs().add(1, 'year').format('YYYY-MM-DD'))
 // const day02 = dayjs('2021-3-8').format('YYYY-MM-DD')
+// console.log(day01,day02);
 // console.log(day01<day02)
 
-axios({
-  url: 'http://down.nipic.com/download?id=33770371',
-  headers: {
-    Cookie:'Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612578763,1612743654,1612827541,1612921212; verifyCode=b7c81fe4dcca4534; VerifyToken=ikUl8N9KQs8RLo9MYuteuG8cVFbDrmCXlfz0H0RLu709bEh1aMcLCnEhmZOYq9D8; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEwIDIxOjQwOjEyXTM4MGJkMGQ3OTAzNDgyNmM=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1612944003',
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'  }
-}).then(res=>{
-  const nitufen = res.data.match(/将扣除<span class="font-tahoma red1">(\S*)<\/span>/)[1]
-  console.log(nitufen);
-})
+// axios({
+//   url: 'http://down.nipic.com/download?id=33770371',
+//   headers: {
+//     Cookie:'Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612578763,1612743654,1612827541,1612921212; verifyCode=b7c81fe4dcca4534; VerifyToken=ikUl8N9KQs8RLo9MYuteuG8cVFbDrmCXlfz0H0RLu709bEh1aMcLCnEhmZOYq9D8; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEwIDIxOjQwOjEyXTM4MGJkMGQ3OTAzNDgyNmM=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1612944003',
+//     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'  }
+// }).then(res=>{
+//   const nitufen = res.data.match(/将扣除<span class="font-tahoma red1">(\S*)<\/span>/)[1]
+//   console.log(nitufen);
+// })
