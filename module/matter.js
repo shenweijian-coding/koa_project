@@ -58,7 +58,7 @@ async function tukebaba(reqData) {
           Cookie: cookie
         }
       })
-      console.log(res)
+      if(!res) resolve({})
       const downurl = JSON.parse(res.match(/{(\S*)}/)[0]).downurl
       console.log(downurl);
       resolve(downurl)
@@ -93,6 +93,7 @@ async function mizhi(reqData) {
           Cookie: cookie,
         }
       })
+      if(!res) resolve({})
       // https://down.51miz.com/ 代理转发
       // http://127.0.0.1/element/00/89/58/41/51miz-E895841-B39F85F7.png
       downurl = res.replace('https://down.51miz.com', 'http://127.0.0.1:3001')
@@ -229,6 +230,7 @@ async function shetu(reqData) {
 // 昵图
 async function nitu(ctx) {
   const { a, d } = ctx.request.body
+  console.log(a, d);
   const url = 'http://down.nipic.com/ajax/download_go'
   // 查找cookie
   const result = await DB.find('cookie', { name: 'nitu' })
@@ -239,22 +241,19 @@ async function nitu(ctx) {
     try {
       // 先去获取这个素材需要多少昵图分
       const source = await request({
-        url: 'http://down.nipic.com/download?id=33770371',
+        url: `http://down.nipic.com/download?id=${d}`,
         headers: {
-          Cookie:'Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612578763,1612743654,1612827541,1612921212; verifyCode=b7c81fe4dcca4534; VerifyToken=ikUl8N9KQs8RLo9MYuteuG8cVFbDrmCXlfz0H0RLu709bEh1aMcLCnEhmZOYq9D8; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEwIDIxOjQwOjEyXTM4MGJkMGQ3OTAzNDgyNmM=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1612944003',
+          Cookie: cookie,
           Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'  
         }      
       })
       // 消耗多少分
-      const nitufen = source.match(/将扣除<span class="font-tahoma red1">(\S*)<\/span>/)[1]
+      const nitufen = source.match(/<span><b class="font-tahoma red1"> (\S*) <\/b>/)[1]
       // 取出用户有多少分
       const openID = ctx.cookies.get('openID')
       const userInfo = await DB.find('userInfo', {"wxInfo.openId":openID})
-      console.log(nitufen);
       const userNitufen = userInfo[0].webInfo.nitufen
-      console.log(userNitufen);
       if (userNitufen < nitufen) resolve('昵图共享分不足')
-      console.log('不再执行');
       const res = await request({
         url: url,
         method: 'POST',
@@ -266,7 +265,6 @@ async function nitu(ctx) {
       })
       if(!res.data.url)  resolve('服务器错误')
       // 将昵图分减去相应
-      console.log(userNitufen - nitufen)
       await DB.update("userInfo", {"wxInfo.openId":openID},{ "webInfo.nitufen":userNitufen - nitufen})
       resolve(res.data.url)
     } catch (error) {
@@ -394,16 +392,20 @@ async function gaoding(url) {
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject)=>{
-    const res = await request({
-      url: 'https://gaodings.com/index/index/parse.html',
-      method: 'POST',
-      data: `link=${url}&code=`,
-      headers: {
-        Cookie: cookie
-      }
-    })
-    console.log(res)
-    resolve(res.urlList['立即下载'])
+    try {
+      const res = await request({
+        url: 'https://gaodings.com/index/index/parse.html',
+        method: 'POST',
+        data: `link=${url}&code=`,
+        headers: {
+          Cookie: cookie
+        }
+      })
+      if(!res.urlList) resolve({})
+      resolve(res.urlList['立即下载'])
+    } catch (error) {
+      reject(error)
+    }
   })
 }
 module.exports = {

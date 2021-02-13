@@ -1,5 +1,6 @@
 const sort = require('../controllers/classify');
 const { inviteHandlePeople } = require('../module/activity');
+const { getHomeInfo } = require('../module/common');
 const { isAttention } = require('../module/login');
 const { nitu } = require('../module/matter');
 const { pay } = require('../module/pay');
@@ -64,10 +65,11 @@ router.post('/matter', async (ctx)=>{
     }
     // 调用解析
     const res = await sort(ctx.request.body)
-    ctx.body ={
-        code: 1005,
-        url: res
-    }
+		console.log(res);
+			ctx.body ={
+					code: 1005,
+					url: res
+			}
 })
 // 昵图下载
 router.post('/nitu', async(ctx)=>{
@@ -84,7 +86,7 @@ router.post('/nitu', async(ctx)=>{
 	// 昵图网解析开始
 	const res = await nitu(ctx)
 	ctx.body = {
-        code: 1005,
+		code: 1005,
 		url: res
 	}
 })
@@ -103,8 +105,12 @@ router.get('/invite', async (ctx)=>{
  * pay_no 支付订单号
  */
 router.post('/pay', async (ctx)=>{
-    console.log(ctx.request.body);
     await pay(ctx)
     ctx.body = 'success'
+})
+// 获取首页信息
+router.get('/info', async(ctx)=>{
+    const res = await getHomeInfo()
+    ctx.body = { code:1, info: res }
 })
 module.exports=router.routes();
