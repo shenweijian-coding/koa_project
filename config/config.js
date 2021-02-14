@@ -34,8 +34,17 @@ const CACHE = {
   host: 'localhost',
   port: 6379
 }
+
+// 邮箱
+const email = {
+  port:587,
+  host:"qq",
+  service:"qq",
+  user: 'yuan_xiaoshen@qq.com',//发信邮箱账号
+  pass: 'yypquvvdkkjlddja'//发信邮箱密码，这里的密码用的安全管家生成的动态密码，不是普通的qq登录密码等（邮箱--设置--账户--POP3服务--开启POP3、SMTP服务生成的密码）
+}
 /**
  * 1001  用户未登录
  * 
  */
-module.exports = { app, WXMP, CACHE, cookieConfig }
+module.exports = { app, WXMP, CACHE, cookieConfig, email }

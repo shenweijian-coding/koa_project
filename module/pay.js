@@ -26,7 +26,8 @@ async function pay(ctx) {
       "shidaNum": 20,
       "hukeNum": 20,
       "mizhiNum": 20,
-      "tujinglingNum": 20
+      "tujinglingNum": 20,
+      "zhongtuNum":5
     }
     await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
     resolve({})

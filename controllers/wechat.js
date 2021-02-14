@@ -76,7 +76,8 @@ module.exports = async (ctx, next) => {
           "shidaNum": 10,
           "hukeNum": 10,
           "mizhiNum": 10,
-          "tujinglingNum": 10
+          "tujinglingNum": 10,
+          "zhongtuNum": 5
         }
         console.log(user);
         let userInfo = `${user.nickname}（${user.sex ? '男' : '女'}, ${user.country}${user.province}${user.city}）`

@@ -13,7 +13,7 @@ async function validateMember(ctx, type) {
       const { memberType, dueTime } = userInfo[0].webInfo
       // 网站类型
       const freeWebList = [9, 10, 17, 18, 20, 21, 22, 23] // 免费网站
-      const tollWebList = [8,11, 12, 13, 14, 15, 19, 24] // 收费网站
+      const tollWebList = [8,11, 12, 13, 14, 15, 19, 24, 25] // 收费网站
       const totalWeb = new Map([
         [8,'hukeNum'],
         [9,'shidaNum'],
@@ -30,7 +30,8 @@ async function validateMember(ctx, type) {
         [21,'tujiinglingNum'],
         [22,'wotuNum'],
         [23,'miyuansuNum'],
-        [24,'mizhiNum']
+        [24,'mizhiNum'],
+        [25,'zhongtuNum'],
       ])
       console.log('开始判断该用户会员');
       // 解析用户是普通版本 解析的是免费

@@ -384,6 +384,33 @@ async function wotuvip(reqData) {
     }
   })
 }
+// 众图网
+async function zhongtu(reqData) {
+  const { d } = reqData
+  // 查找cookie
+  const result = await DB.find('cookie', { name: 'zhongtu' })
+  console.log('开始查找cookie');
+  const cookie = result[0].cookie
+  if (!cookie) return
+  return new Promise(async (resolve, reject)=>{
+    try {
+      const res = await request({
+        url: 'https://www.ztupic.com/api/goods/DownloadByMember',
+        method: 'post',
+        headers:{
+          Cookie:cookie
+        },
+        data: 'id='+d
+      })
+      console.log(res)
+      if(!res.data) resolve({})
+      const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://127.0.0.1:3001')
+      resolve(downUrl)
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
 // 第三方解析程序 ---搞定素材
 async function gaoding(url) {
   // 查找cookie
@@ -421,5 +448,6 @@ module.exports = {
   baotu,
   qianku,
   qiantu,
-  mizhi
+  mizhi,
+  zhongtu
 }

@@ -1,6 +1,6 @@
 // import { baotu, liutu, miyuansu, nitu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip } from "../module/matter"
 // import { huke, shida } from "../module/video"
-const { baotu, liutu, miyuansu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip, xiongmao, mizhi } = require('../module/matter')
+const { baotu, liutu, miyuansu, qianku, qiantu, sheji90, shetu, tujingling, tukebaba, wotuvip, xiongmao, mizhi, zhongtu } = require('../module/matter')
 const { huke, shida, videoFileDown, fileDownHuke } = require('../module/video')
 module.exports = async function sort(ctx) {
   const { reqData, urlType } = ctx
@@ -56,6 +56,9 @@ module.exports = async function sort(ctx) {
       break;
     case 24: // 觅知网
       resData = await mizhi(reqData)
+      break;
+    case 25: // 众图网
+      resData = await zhongtu(reqData)
       break;
     default:
       resData = { msg:'未找到对应site' }
