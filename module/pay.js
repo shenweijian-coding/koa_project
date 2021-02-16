@@ -4,32 +4,72 @@ async function pay(ctx) {
   return new Promise(async (resolve, reject)=>{
    try {
       // 获取充值用户数据
-    const { pay_id, pay_no, pay_time  } = ctx.request.body
-    console.log(pay_id);
-    await DB.insert('payData', { pay_id, pay_no, pay_time })
+      /**
+       * pay_id   openId
+       * pay_no   订单号
+       * pay_time 支付时间
+       * price 价格
+       */
+    const { pay_id, pay_no, pay_time, price } = ctx.request.body
+    console.log(ctx.request.body);
+    await DB.insert('payData', { pay_id, pay_no, pay_time, price })
     const userInfo = await DB.find('userInfo', {'wxInfo.openId': pay_id})
-    // 根据openId获取用户数据
-    const webInfo = {
-      "memberType": 1,
-      "dueTime": dayjs().add(1, 'year').format('YYYY-MM-DD'),
-      "nitufen": userInfo[0].webInfo.nitufen,
-      "qiantuNum": 10,
-      "liutuNum": 20,
-      "baotuNum": 10,
-      "sheji90Num": 20,
-      "xiongmaoNum": 10,
-      "qiankuNum": 10,
-      "shetuNum": 20,
-      "tukeNum": 20,
-      "miyuansuNum": 20,
-      "wotuNum": 20,
-      "shidaNum": 20,
-      "hukeNum": 20,
-      "mizhiNum": 20,
-      "tujinglingNum": 20,
-      "zhongtuNum":5
+    if(!userInfo.length) return console.log('未找到充值用户');
+    // 根据付的钱对应权限
+    if (price === '50') { // 年卡
+      const webInfo = {
+        "memberType": 1,
+        "dueTime": dayjs().add(1, 'year').format('YYYY-MM-DD'),
+        "nitufen": userInfo[0].webInfo.nitufen,
+        "qiantuNum": 10,
+        "liutuNum": 20,
+        "baotuNum": 10,
+        "sheji90Num": 20,
+        "xiongmaoNum": 10,
+        "qiankuNum": 10,
+        "shetuNum": 20,
+        "tukeNum": 20,
+        "miyuansuNum": 20,
+        "wotuNum": 20,
+        "shidaNum": 20,
+        "hukeNum": 0,
+        "mizhiNum": 20,
+        "tujinglingNum": 20,
+        "zhongtuNum":5
+      }
+      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
+    } else if (price === '14'){ // 月卡
+      const webInfo = {
+        "memberType": 1,
+        "dueTime": dayjs().add(1, 'month').format('YYYY-MM-DD'),
+        "nitufen": userInfo[0].webInfo.nitufen,
+        "qiantuNum": 10,
+        "liutuNum": 20,
+        "baotuNum": 10,
+        "sheji90Num": 20,
+        "xiongmaoNum": 10,
+        "qiankuNum": 10,
+        "shetuNum": 20,
+        "tukeNum": 20,
+        "miyuansuNum": 20,
+        "wotuNum": 20,
+        "shidaNum": 20,
+        "hukeNum": 20,
+        "mizhiNum": 20,
+        "tujinglingNum": 20,
+        "zhongtuNum":5
+      }
+      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
+    } else if (price === '4') { // 1000昵图分
+      const nitufen = userInfo[0].webInfo.nitufen + 1000
+      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
+    } else if (price === '10') { // 5000昵图分
+      const nitufen = userInfo[0].webInfo.nitufen + 10000
+      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
+    } else if (price === '30') { // 虎课
+      
     }
-    await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
+    // 根据openId获取用户数据
     resolve({})
     // 充值成功
    } catch (error) {

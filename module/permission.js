@@ -1,6 +1,10 @@
 const DB = require('../db/db')
 const dayjs = require('dayjs')
 // 验证会员类型
+async function validateVideo(ctx) {
+
+}
+// 验证会员类型
 async function validateMember(ctx, type) {
   return new Promise(async (resolve,reject)=>{
     try {
@@ -10,7 +14,7 @@ async function validateMember(ctx, type) {
       const { urlType } = ctx.request.body
       // 查询解析用户的信息
       const userInfo = await DB.find('userInfo', { 'wxInfo.openId': openID })
-      const { memberType, dueTime } = userInfo[0].webInfo
+      const { memberType, dueTime, videoTime } = userInfo[0].webInfo
       // 网站类型
       const freeWebList = [9, 10, 17, 18, 20, 21, 22, 23] // 免费网站
       const tollWebList = [8,11, 12, 13, 14, 15, 19, 24, 25] // 收费网站
@@ -34,7 +38,31 @@ async function validateMember(ctx, type) {
         [25,'zhongtuNum'],
       ])
       console.log('开始判断该用户会员');
-      // 解析用户是普通版本 解析的是免费
+      if(type === 1){ // 视频
+        if(freeWebList.includes(urlType)){
+          const cur = totalWeb.get(urlType)
+          if(userInfo[0].webInfo[cur] <= 0) {
+            resolve({ sign:1004 })
+          }else{
+            resolve({ sign:1005, webName:cur })
+          }
+        }else if(tollWebList.includes(urlType)){
+        // 校验日期是否过期
+        if(dayjs().format('YYYY-MM-DD') >= videoTime) { // 过期了
+          console.log('该用户已过期');
+          resolve ({ sign: 1003 })
+        }else{
+          // 判断是否达到上限
+          const cur = totalWeb.get(urlType)
+          if(userInfo[0].webInfo[cur] <= 0){
+            resolve({ sign:1004 })
+          }else{
+            resolve({ sign:1005, webName:cur })
+          }
+        }
+        }
+      }else{
+              // 解析用户是普通版本 解析的是免费
       if (memberType === 0 && freeWebList.includes(urlType)) {
         const cur = totalWeb.get(urlType)
         if(userInfo[0].webInfo[cur] <= 0) {
@@ -58,6 +86,7 @@ async function validateMember(ctx, type) {
             resolve({ sign:1005, webName:cur })
           }
         }
+      }
       }
     } catch (error) {
       reject(error)

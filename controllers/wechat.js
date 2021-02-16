@@ -62,22 +62,23 @@ module.exports = async (ctx, next) => {
         const webInfo = {
           "memberType": 0,
           "dueTime": "2021-01-01",
+          "videoTime":"2021-01-01",
           "nitufen": 0,
-          "qiantuNum": 10,
+          "qiantuNum": 0,
           "liutuNum": 10,
-          "baotuNum": 10,
-          "sheji90Num": 10,
-          "xiongmaoNum": 10,
-          "qiankuNum": 10,
+          "baotuNum": 0,
+          "sheji90Num": 0,
+          "xiongmaoNum": 0,
+          "qiankuNum": 0,
           "shetuNum": 10,
           "tukeNum": 10,
-          "miyuansuNum": 10,
-          "wotuNum": 10,
+          "miyuansuNum": 0,
+          "wotuNum": 0,
           "shidaNum": 10,
-          "hukeNum": 10,
-          "mizhiNum": 10,
+          "hukeNum": 0,
+          "mizhiNum": 0,
           "tujinglingNum": 10,
-          "zhongtuNum": 5
+          "zhongtuNum": 0
         }
         console.log(user);
         let userInfo = `${user.nickname}（${user.sex ? '男' : '女'}, ${user.country}${user.province}${user.city}）`

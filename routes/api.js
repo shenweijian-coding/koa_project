@@ -11,6 +11,7 @@ var router=require('koa-router')();
 router.get('/',async (ctx)=>{
 ctx.body = 'api默认'
 })
+// 获取用户信息
 /**
  * 1. 验证是否关注
  *  -未关注
@@ -32,7 +33,7 @@ router.post('/play',async (ctx)=>{
     }
     // 验证权限 video视频 播放权限
     console.log('开始校验权限');
-    const { sign, webName = null } = await validateMember(ctx)
+    const { sign, webName = null } = await validateMember(ctx, 1)
     console.log('验证完毕', sign, webName);
     if (sign === 1002) { // 没有下载权限
         return ctx.body = { code:sign,msg:'您没有观看权限' }
