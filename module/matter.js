@@ -1,6 +1,7 @@
 const DB = require('../db/db')
 const request = require('../utils/request')
 const axios = require('axios')
+const { ObjectId } = require('mongodb')
 
 // 觅元素
 async function miyuansu(reqData) {
@@ -250,8 +251,8 @@ async function nitu(ctx) {
       // 消耗多少分
       const nitufen = source.match(/<span><b class="font-tahoma red1"> (\S*) <\/b>/)[1]
       // 取出用户有多少分
-      const openID = ctx.cookies.get('openID')
-      const userInfo = await DB.find('userInfo', {"wxInfo.openId":openID})
+      const userId = ctx.cookies.get('userId')
+      const userInfo = await DB.find('userInfo', {"_id":ObjectId(userId)})
       const userNitufen = userInfo[0].webInfo.nitufen
       if (userNitufen < nitufen) resolve('昵图共享分不足')
       const res = await request({
@@ -265,7 +266,7 @@ async function nitu(ctx) {
       })
       if(!res.data.url)  resolve('服务器错误')
       // 将昵图分减去相应
-      await DB.update("userInfo", {"wxInfo.openId":openID},{ "webInfo.nitufen":userNitufen - nitufen})
+      await DB.update("userInfo", {"_id":ObjectId(userId)},{ "webInfo.nitufen":userNitufen - nitufen})
       resolve(res.data.url)
     } catch (error) {
       reject(error)

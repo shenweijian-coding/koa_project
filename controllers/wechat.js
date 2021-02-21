@@ -48,14 +48,15 @@ module.exports = async (ctx, next) => {
         // 添加完成 取出账号密码 并关联数据
         const accountObj = generateAccountPassword(userID)
         // 与之前的数据进行关联
-        associatedUserInfo(userID, accountObj)
-        body = 
-        `
-        账号：${accountObj.account}
-        密码：${accountObj.pwd}
-        tips:请先使用此账号密码登录,登录后可修改账号密码,方便您记忆~
-        `
+        await associatedUserInfo(userID, accountObj)
+        body = `
+账号：${accountObj.account}
+密码：${accountObj.pwd}
+tips:请先使用此账号密码登录,登录后可修改账号密码,方便您记忆~
+`
         }
+      }else {
+        body = '无法识别您的信息'
       }
     } else if (msgType === 'event') {
       switch (msgEvent) {

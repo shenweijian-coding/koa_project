@@ -16,7 +16,7 @@ var app=new Koa();
 // const options = { threshold: 2048 };
 // app.use(compress(options));
 app.use(cors({
-  gin: 'http://127.0.0.1:8080',    // 前端地址
+  gin: 'http://localhost:8080/',    // 前端地址
   credentials: true
 }));
 app.use(static(__dirname + '/statics'))

@@ -1,15 +1,16 @@
 const DB = require('../db/db')
 const dayjs = require('dayjs')
+const { ObjectId } = require('mongodb')
 // 验证会员类型
 async function validateMember(ctx, type) {
   return new Promise(async (resolve,reject)=>{
     try {
       // 获取openId
-      let openID = ctx.cookies.get('openID')
+      let userId = ctx.cookies.get('userId')
       // 获取网站类型
       const { urlType } = ctx.request.body
       // 查询解析用户的信息
-      const userInfo = await DB.find('userInfo', { 'wxInfo.openId': openID })
+      const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
       const { memberType, dueTime, videoTime } = userInfo[0].webInfo
       // 网站类型
       const freeWebList = [9, 10, 17, 18, 20, 21, 23] // 免费网站
@@ -93,12 +94,12 @@ async function validateMember(ctx, type) {
 async function memberSubNum(ctx, webName) {
   return new Promise(async(resolve, reject)=>{
     try {
-      // 获取openid
-      let openID = ctx.cookies.get('openID')
-      const userInfo = await DB.find('userInfo', { 'wxInfo.openId': openID })
+      // 获取userId
+      let userId = ctx.cookies.get('userId')
+      const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
       const downNum = userInfo[0].webInfo[webName] - 1
       const property = "webInfo." + webName
-      await DB.update('userInfo', {"wxInfo.openId": openID}, { [property]: downNum })
+      await DB.update('userInfo', {'_id':ObjectId(userId)}, { [property]: downNum })
       resolve({})
     } catch (error) {
       reject(error)

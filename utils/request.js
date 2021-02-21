@@ -1,6 +1,6 @@
 const axios = require('axios')
 const service = axios.create({
-  timeout: 6000 // request timeout
+  timeout: 8000 // request timeout
 })
 // 请求前
 service.interceptors.request.use(config => {
@@ -21,6 +21,7 @@ service.interceptors.response.use(
     }
   },
   error => {
+    console.log(error.response);
     if(error.response.status === 302){
       return Promise.resolve(error.response.headers.location)
     }

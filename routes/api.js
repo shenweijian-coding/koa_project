@@ -1,7 +1,7 @@
 const sort = require('../controllers/classify');
 const { inviteHandlePeople } = require('../module/activity');
 const { getHomeInfo, getUserInfo, addData } = require('../module/common');
-const { isAttention } = require('../module/login');
+const { isAttention, login } = require('../module/login');
 const { nitu } = require('../module/matter');
 const { pay } = require('../module/pay');
 const { memberSubNum, validateMember } = require('../module/permission');
@@ -10,6 +10,12 @@ var router = require('koa-router')();
 
 router.get('/', async (ctx) => {
     ctx.body = 'api默认'
+})
+router.post('/login',async (ctx) => {
+    const msg = await login(ctx)
+    ctx.body = {
+        msg: msg
+    }
 })
 // 获取用户信息
 /**
@@ -22,12 +28,12 @@ router.get('/', async (ctx) => {
 // 视频播放
 router.post('/play', async (ctx) => {
     // 验证是否关注
-    const userInfo = await isAttention(ctx)
+    const isLogin = await isAttention(ctx)
     // 用户未登录
-    if (!userInfo) {
+    if (!isLogin) {
         ctx.body = {
             code: 1001,
-            msg: 'success'
+            msg: 'error'
         }
         return
     }
@@ -43,10 +49,10 @@ router.post('/play', async (ctx) => {
         return ctx.body = { code: sign, msg: '您今日观看次数已用尽,赶紧去获取赞助版呐~' }
     }
     console.log('开始解析链接')
-    // 调用视达解析
+    // 调用
     const res = await sort(ctx.request.body)
     // 解析成功 相应次数  -1
-    await memberSubNum(ctx, webName)
+    memberSubNum(ctx, webName)
     ctx.body = {
         code: 1005,
         res
@@ -92,7 +98,7 @@ router.post('/nitu', async (ctx) => {
     if (!userInfo) {
         ctx.body = {
             code: 1001,
-            msg: 'success'
+            msg: 'error'
         }
         return
     }
@@ -148,7 +154,6 @@ router.get('/info', async (ctx) => {
 })
 // 获取账号信息
 router.get('/userinfo', async (ctx) => {
-	console.log('测试');
   // 验证是否关注
   const userInfo = await isAttention(ctx)
   // 用户未登录
@@ -175,11 +180,10 @@ router.post('/add', async(ctx)=> {
 			return
 		}
 	
-    addData(ctx).then(res=>{
-        ctx.body = {
-            code: 1001,
-            msg: '添加成功'
-        }
-    })
+    await addData(ctx)
+			ctx.body = {
+					code: 1001,
+					msg: '添加成功'
+			}
 })
 module.exports = router.routes();

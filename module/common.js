@@ -3,7 +3,7 @@ const DB = require('../db/db')
 const nodemailer=require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const { email } = require('../config/config');
-
+const crypto = require('crypto')
 
 // 发送邮件的方法
 const transporter = nodemailer.createTransport(smtpTransport({
@@ -57,10 +57,8 @@ async function otherDownOne() {
 async function getUserInfo(ctx) {
   return new Promise(async(resolve,reject)=>{
     try {
-      const openId = ctx.cookies.get('openID')
-      console.log('测试2');
-      const userInfo = await DB.find('userInfo', { 'wxInfo.openId':openId })
-      console.log(userInfo[0]);
+      const userId = ctx.cookies.get('userId')
+      const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
       if(!userInfo.length) resolve({})
       const res = userInfo[0].webInfo
       res.email = userInfo[0].email || ''
@@ -76,10 +74,10 @@ async function addData(ctx) {
   // 检测email的格式
   return new Promise(async(resolve,reject)=>{
     try {
-      const openId = ctx.cookies.get('openID')
+      const userId = ctx.cookies.get('userId')
       const { email } = ctx.request.body
-      console.log(openId,email);
-      await DB.update('userInfo',{'wxInfo.openId':openId},{ email:email },{ multi:1 })
+      if(!email) resolve('不能为空')
+      await DB.update('userInfo',{ '_id':ObjectId(userId)},{ email:email },{ multi:1 })
       resolve()
     } catch (error) {
       reject(error)
@@ -88,9 +86,11 @@ async function addData(ctx) {
 }
 // 账号密码进行关联
 async function associatedUserInfo(userID, accountObj){
-  return new Promise((resolve,reject)=>{
+  return new Promise(async(resolve,reject)=>{
     try {
-      await DB.update('userInfo', {'userId':userID},{'userName':accountObj.account})
+      const md5Pwd = crypto.createHash('md5').update(accountObj.pwd).digest("hex")
+      await DB.update('userInfo', {'userId':userID}, {'userName':accountObj.account, 'userPwd':md5Pwd }, { multi:1 })
+      resolve()
     } catch (error) {
       reject(error)
     }
