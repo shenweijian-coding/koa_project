@@ -1,9 +1,12 @@
 const { ObjectId } = require('mongodb')
 const DB = require('../db/db')
+const sort = require('../controllers/classify');
 const nodemailer=require('nodemailer');
 const smtpTransport = require('nodemailer-smtp-transport');
 const { email } = require('../config/config');
-const crypto = require('crypto')
+const crypto = require('crypto');
+const { validateMember,memberSubNum } = require('./permission');
+const { promises } = require('fs');
 
 // 发送邮件的方法
 const transporter = nodemailer.createTransport(smtpTransport({
@@ -155,6 +158,109 @@ async function addUserInfo(addInfo) {
   })
 
 }
+// 微信公众号解析
+async function wxGongZhongDown(userId, urlLink){
+  return new Promise(async(resolve,reject)=>{
+    try {
+    const linkArrData = urlLink.split('/') // 先分割成数组
+    // 根据urlLink获取网站
+    const reg = RegExp(/58pic|616pic|588ku|ztupic|ibaotu|699pic|nipic|90sheji|tukuppt|16pic|tuke|51yuansu|ooopic|51miz/)
+    if (!reg.test(urlLink)) resolve('暂不支持该网站')
+    // 验证通过  开始区分网站类型
+    let urlType = ''
+    let reqData = {}
+    if (urlLink.indexOf('58pic') !== -1) {
+      urlType = 12
+      reqData = { urlLink }
+    } else if (urlLink.indexOf('51yuansu') !== -1) {
+      urlType = 23
+      if (linkArrData[3] === 'bg') {
+        reqData = { a: 'bdown', d: linkArrData[4].split('.')[0] }
+      } else if (linkArrData[3] === 'sc') {
+        reqData = { a: 'down', d: linkArrData[4].split('.')[0] }
+      }
+    } else if (urlLink.indexOf('588ku') !== -1) {
+      urlType = 13
+      reqData = { urlLink }
+    } else if (urlLink.indexOf('616pic') !== -1) {
+      urlType = 21
+      reqData = { d:linkArrData[4].split('.')[0], a: 1 }
+    } else if (urlLink.indexOf('ibaotu') !== -1) {
+      urlType = 14
+      reqData = { d:linkArrData[4].split('.')[0] }
+    } else if (urlLink.indexOf('699pic') !== -1) {
+      urlType = 15
+      resolve('请前往网页下载')
+    } else if (urlLink.indexOf('nipic') !== -1) {
+      urlType = 16
+      resolve('请前往网页下载')
+      reqData = { d:linkArrData[4].split('.')[0],a: '6' }
+    } else if (urlLink.indexOf('90sheji') !== -1) {
+      urlType = 17
+      reqData = { d:linkArrData[4].split('.')[0] }
+    } else if (urlLink.indexOf('tukuppt') !== -1) {
+      urlType = 19
+      reqData = { d:linkArrData[4].split('.')[0] }
+    } else if (urlLink.indexOf('16pic') !== -1) {
+      urlType = 18
+    } else if (urlLink.indexOf('tuke') !== -1) {
+      urlType = 20
+      reqData = { d:linkArrData[4].split('.')[0] }
+    } else if (urlLink.indexOf('ooopic') !== -1) {
+      urlType = 22
+      reqData = { d:linkArrData[3].split('.')[0].split('_')[1] }
+    } else if (urlLink.indexOf('51miz') !== -1) {
+      urlType = 24
+      reqData.d = linkArrData[4].split('.')[0]
+      if (linkArrData[3] === 'sucai') {
+        reqData.a = { a: 17, f: 'source' }
+      } else if (linkArrData[3] === 'ppt') {
+        reqData.a = { a: 9, f: '' }
+      } else if (linkArrData[3] === 'muban') {
+        reqData.a = { a: 18, f: '' }
+      } else if (linkArrData[3] === 'tupian') {
+        reqData.a = { a: 3, f: '' }
+      } else if (linkArrData[3] === 'fonts') {
+      } else if (linkArrData[3] === 'shipin') {
+        reqData.a = { a: 5, f: 2 }
+      } else if (linkArrData[3] === 'wendang') {
+        reqData.a = { a: 10, f: '' }
+      } else if (linkArrData[3] === 'shouchaobao') {
+        reqData.a = { a: 8, f: '' }
+      } else if (linkArrData[3] === 'biaoge') {
+        reqData.a = { a: 11, f: '' }
+      } else if (linkArrData[3] === 'sound') {
+        reqData.a = { a: 21, f: 1 }
+      } else if (linkArrData[3] === 'dianshang') {
+        reqData.a = { a: 22, f: '' }
+      }
+    } else if (urlLink.indexOf('ztupic') !== -1) {
+      urlType = 25
+      reqData = { d:linkArrData[4].split('.')[0] }
+    }
+    // 有了网站了 开始校验权限
+    const { sign, webName = null } = await validateMember(userId, urlType, 'wx')
+    console.log(sign);
+    if (sign !== 1005) { // 没有下载权限
+      resolve('您账号不满足下载条件,请前往网页版查看~')
+      return
+    }
+    const url = await sort({ reqData, urlType })
+    console.log(url);
+    resolve(url)
+    memberSubNum(userId, webName, 'wx')
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+// 获取微信公众号 帮助  消息
+async function getWvHelp(){
+  return new Promise(async(resolve,reject)=>{
+    const helpInfo = await DB.find('otherInfo', { '_id':ObjectId('602679a622072f47504aca4c') })
+    resolve(helpInfo[0].helpInfo)
+  })
+}
 // 寻找账号密码
 async function getUserNamePwd() {}
 module.exports = {
@@ -166,5 +272,7 @@ module.exports = {
   addUserInfo,
   getUserNamePwd,
   generateAccountPassword,
-  associatedUserInfo
+  associatedUserInfo,
+  wxGongZhongDown,
+  getWvHelp
 }

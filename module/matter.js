@@ -34,7 +34,7 @@ async function miyuansu(reqData) {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      console.log(res)
+      if(!res.url) resolve({})
       resolve(res.url)
     } catch (error) {
       reject(error)

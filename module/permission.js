@@ -2,15 +2,24 @@ const DB = require('../db/db')
 const dayjs = require('dayjs')
 const { ObjectId } = require('mongodb')
 // 验证会员类型
-async function validateMember(ctx, type) {
+async function validateMember(ctx, type, tag = 'web') {
   return new Promise(async (resolve,reject)=>{
     try {
       // 获取openId
-      let userId = ctx.cookies.get('userId')
+      let userId
+      let urlType
+      let userInfo
+      if(tag === 'web'){
+        userId = ctx.cookies.get('userId')
+        urlType = ctx.request.body.urlType
+        userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
+      }else{
+        userId = ctx
+        urlType = type
+        userInfo = await DB.find('userInfo', { 'userId': userId })
+      }
       // 获取网站类型
-      const { urlType } = ctx.request.body
       // 查询解析用户的信息
-      const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
       const { memberType, dueTime, videoTime } = userInfo[0].webInfo
       // 网站类型
       const freeWebList = [9, 10, 17, 18, 20, 21, 23] // 免费网站
@@ -91,15 +100,26 @@ async function validateMember(ctx, type) {
   })
 }
 // 相应次数减去
-async function memberSubNum(ctx, webName) {
+async function memberSubNum(ctx, webName, tag = 'web') {
   return new Promise(async(resolve, reject)=>{
     try {
       // 获取userId
-      let userId = ctx.cookies.get('userId')
-      const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
+      let userId
+      let userInfo
+      if(tag === 'web'){
+        userId = ctx.cookies.get('userId')
+        userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
+      }else {
+        userId = ctx
+        userInfo = await DB.find('userInfo', { 'userId':userId })
+      }
       const downNum = userInfo[0].webInfo[webName] - 1
       const property = "webInfo." + webName
-      await DB.update('userInfo', {'_id':ObjectId(userId)}, { [property]: downNum })
+      if(tag === 'web'){
+        await DB.update('userInfo', {'_id':ObjectId(userId)}, { [property]: downNum })
+      }else{
+        await DB.update('userInfo', {'userId':userId}, { [property]: downNum }) 
+      }
       resolve({})
     } catch (error) {
       reject(error)

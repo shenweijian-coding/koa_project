@@ -6,7 +6,7 @@ const Wechat = require('../utils/wechat/wxmp')
 const MPConfig = require('../utils/wechat/helper').MP
 const qr = require('../vendor/qr')
 const DB = require('../db/db');
-const { addUserInfo,findUserInfo,addData,generateAccountPassword, associatedUserInfo } = require('../module/common');
+const { addUserInfo,findUserInfo,addData,generateAccountPassword, associatedUserInfo, wxGongZhongDown, getWvHelp } = require('../module/common');
 
 const MP = new Wechat(MPConfig)
 
@@ -49,12 +49,19 @@ module.exports = async (ctx, next) => {
         const accountObj = generateAccountPassword(userID)
         // 与之前的数据进行关联
         await associatedUserInfo(userID, accountObj)
-        body = `
-账号：${accountObj.account}
+        body = `账号：${accountObj.account}
 密码：${accountObj.pwd}
 tips:请先使用此账号密码登录,登录后可修改账号密码,方便您记忆~
 `
         }
+      }else if(/http/.test(message.Content)){
+        const url = await wxGongZhongDown(userID, message.Content)
+        body = `请点击下方连接进行下载
+${url}
+【链接有有效期,请您抓紧下载】
+`
+      }else if(/帮助/.test(message.Content)){
+          body = await getWvHelp()
       }else {
         body = '无法识别您的信息'
       }

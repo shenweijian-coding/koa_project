@@ -1,5 +1,6 @@
 const DB = require('../db/db')
-const dayjs = require('dayjs')
+const dayjs = require('dayjs');
+const { ObjectId } = require('mongodb');
 async function pay(ctx) {
   return new Promise(async (resolve, reject)=>{
    try {
@@ -13,8 +14,8 @@ async function pay(ctx) {
     const { pay_id, pay_no, pay_time, price } = ctx.request.body
     console.log(ctx.request.body);
     await DB.insert('payData', { pay_id, pay_no, pay_time, price })
-    const userInfo = await DB.find('userInfo', {'wxInfo.openId': pay_id})
-    if(!userInfo.length) return console.log('未找到充值用户');
+    const userInfo = await DB.find('userInfo', {'_id': ObjectId(pay_id)})
+    if(userInfo.length !== 1) return console.log('未找到充值用户');
     // 根据付的钱对应权限
     if (price === '70.00' || price === '70') { // 年卡
       const webInfo = {
@@ -38,7 +39,7 @@ async function pay(ctx) {
         "tujinglingNum": 20,
         "zhongtuNum":5
       }
-      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
+      await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo': webInfo})
     } else if (price === '12.00' || price === '12'){ // 月卡
       const webInfo = {
         "memberType": 1,
@@ -61,16 +62,16 @@ async function pay(ctx) {
         "tujinglingNum": 20,
         "zhongtuNum":5
       }
-      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
+      await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo': webInfo})
     } else if (price === '4.00' || price === '4') { // 1000昵图分
       const nitufen = userInfo[0].webInfo.nitufen + 1000
-      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
+      await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.nitufen': nitufen})
     } else if (price === '10.00' || price === '10') { // 5000昵图分
       const nitufen = userInfo[0].webInfo.nitufen + 10000
-      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
+      await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.nitufen': nitufen})
     } else if (price === '30.00' || price === '30') { // 虎课
       const videoTime =dayjs().add(1, 'year').format('YYYY-MM-DD')
-      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.videoTime':videoTime})
+      await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.videoTime':videoTime})
     }
     // 根据openId获取用户数据
     resolve({})
