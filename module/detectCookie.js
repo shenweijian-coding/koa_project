@@ -4,9 +4,10 @@ const DB = require('../db/db')
 const { sendMail } = require('./common')
 // 检测包图
 async function  testShetu () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
+    try {
     const result = await DB.find('cookie', { name: 'shetu' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'http://699pic.com/community/myPermission',
         headers: {
@@ -14,18 +15,22 @@ async function  testShetu () {
         }
      })
      if (source.indexOf('我的授权') === -1) {
+       console.log('发送成功');
        // 说明掉线了  需要邮箱通知  并删除该cookie
        // await DB.remove('cookie',{}) // 删除cookie
-       sendMail('1834638245@qq.com','','摄图','','')
+       sendMail('1834638245@qq.com','','摄图','','掉线了')
      }
+    }
+    } catch (error) {
+      reject(error)
     }
   })
 }
 // 检测摄图
 async function  testBaotu () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'baotu' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'https://ibaotu.com/?m=home&a=myDownload',
         headers: {
@@ -42,9 +47,9 @@ async function  testBaotu () {
 }
 // 检测觅知
 async function  testMizhi () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'mizhi' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'https://www.51miz.com/index.php?m=home&a=myvip',
         headers: {
@@ -61,9 +66,9 @@ async function  testMizhi () {
 }
 // 检测觅元素
 async function  testMiyuansu () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'miyuansu' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'http://www.51yuansu.com/index.php?m=user',
         headers: {
@@ -80,9 +85,9 @@ async function  testMiyuansu () {
 }
 // 检测熊猫
 async function  testXiongmao () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'xiongmao' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'https://www.tukuppt.com/index/usercenter/info',
         headers: {
@@ -99,9 +104,9 @@ async function  testXiongmao () {
 }
 // 检测图克巴巴
 async function  testTuke () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tukebaba' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'http://www.tuke88.com/user/center',
         headers: {
@@ -118,9 +123,9 @@ async function  testTuke () {
 }
 // 检测图精灵
 async function  testTujingling () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tujingling' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'http://616pic.com/user/favorite',
         headers: {
@@ -137,9 +142,9 @@ async function  testTujingling () {
 }
 // 检测众图
 async function  testZhongtu () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'zhongtu' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'https://www.ztupic.com/user/center',
         headers: {
@@ -156,9 +161,9 @@ async function  testZhongtu () {
 }
 // 检测90设计
 async function  testSheji90 () {
-  return new Promise((resolve, reject)=>{
+  return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'sheji90' })
-    for (let i = 0; i < result[i].length; i++) {
+    for (let i = 0; i < result.length; i++) {
       const source = await request({
         url: 'http://90sheji.com/u/2774472/?a=selfEdit',
         headers: {
@@ -173,3 +178,25 @@ async function  testSheji90 () {
     }
   })
 }
+
+function scheduleRecurrenceRule(){
+  const rule = new schedule.RecurrenceRule()
+    // rule.dayOfWeek = 2;
+    // rule.month = 3;
+    // rule.dayOfMonth = 1;
+    rule.minute = 0;
+    rule.second = 0;
+    schedule.scheduleJob(rule, function(){
+      console.log('scheduleRecurrenceRule:' + new Date());
+      testShetu()
+      testSheji90()
+      testZhongtu()
+      testTujingling()
+      testTuke()
+      testXiongmao()
+      testMiyuansu()
+      testBaotu()
+      testMizhi()
+   });
+}
+scheduleRecurrenceRule()

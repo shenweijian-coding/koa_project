@@ -1,10 +1,6 @@
 const DB = require('../db/db')
 const dayjs = require('dayjs')
 // 验证会员类型
-async function validateVideo(ctx) {
-
-}
-// 验证会员类型
 async function validateMember(ctx, type) {
   return new Promise(async (resolve,reject)=>{
     try {
@@ -16,8 +12,8 @@ async function validateMember(ctx, type) {
       const userInfo = await DB.find('userInfo', { 'wxInfo.openId': openID })
       const { memberType, dueTime, videoTime } = userInfo[0].webInfo
       // 网站类型
-      const freeWebList = [9, 10, 17, 18, 20, 21, 22, 23] // 免费网站
-      const tollWebList = [8,11, 12, 13, 14, 15, 19, 24, 25] // 收费网站
+      const freeWebList = [9, 10, 17, 18, 20, 21, 23] // 免费网站
+      const tollWebList = [8,11, 12, 13, 14, 15, 19, 22, 24, 25] // 收费网站
       const totalWeb = new Map([
         [8,'hukeNum'],
         [9,'shidaNum'],

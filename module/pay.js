@@ -16,10 +16,11 @@ async function pay(ctx) {
     const userInfo = await DB.find('userInfo', {'wxInfo.openId': pay_id})
     if(!userInfo.length) return console.log('未找到充值用户');
     // 根据付的钱对应权限
-    if (price === '50') { // 年卡
+    if (price === '70.00' || price === '70') { // 年卡
       const webInfo = {
         "memberType": 1,
         "dueTime": dayjs().add(1, 'year').format('YYYY-MM-DD'),
+        "videoTime": userInfo[0].webInfo.videoTime,
         "nitufen": userInfo[0].webInfo.nitufen,
         "qiantuNum": 10,
         "liutuNum": 20,
@@ -38,10 +39,11 @@ async function pay(ctx) {
         "zhongtuNum":5
       }
       await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
-    } else if (price === '14'){ // 月卡
+    } else if (price === '12.00' || price === '12'){ // 月卡
       const webInfo = {
         "memberType": 1,
         "dueTime": dayjs().add(1, 'month').format('YYYY-MM-DD'),
+        "videoTime": userInfo[0].webInfo.videoTime,
         "nitufen": userInfo[0].webInfo.nitufen,
         "qiantuNum": 10,
         "liutuNum": 20,
@@ -54,20 +56,21 @@ async function pay(ctx) {
         "miyuansuNum": 20,
         "wotuNum": 20,
         "shidaNum": 20,
-        "hukeNum": 20,
+        "hukeNum": 30,
         "mizhiNum": 20,
         "tujinglingNum": 20,
         "zhongtuNum":5
       }
       await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo': webInfo})
-    } else if (price === '4') { // 1000昵图分
+    } else if (price === '4.00' || price === '4') { // 1000昵图分
       const nitufen = userInfo[0].webInfo.nitufen + 1000
       await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
-    } else if (price === '10') { // 5000昵图分
+    } else if (price === '10.00' || price === '10') { // 5000昵图分
       const nitufen = userInfo[0].webInfo.nitufen + 10000
       await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.nitufen': nitufen})
-    } else if (price === '30') { // 虎课
-      
+    } else if (price === '30.00' || price === '30') { // 虎课
+      const videoTime =dayjs().add(1, 'year').format('YYYY-MM-DD')
+      await DB.update('userInfo', {'wxInfo.openId':pay_id}, {'webInfo.videoTime':videoTime})
     }
     // 根据openId获取用户数据
     resolve({})

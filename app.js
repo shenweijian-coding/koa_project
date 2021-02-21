@@ -1,9 +1,11 @@
 
 const Koa=require('koa')
+const static = require('koa-static')
 const router=require('koa-router')()
 const cors = require('koa2-cors')
 const XMLParser = require('./middlewares/XMLParser')
 const bodyParser= require('koa-bodyparser')
+// const compress = require('koa-compress');
 //引入子模块
 var admin=require('./routes/admin.js')
 var api=require('./routes/api.js')
@@ -11,10 +13,13 @@ var wechat = require('./routes/wechat')
 var app=new Koa();
 // 代理转发
 // 解决跨域
+// const options = { threshold: 2048 };
+// app.use(compress(options));
 app.use(cors({
-  origin: 'http://localhost:8080',    // 前端地址
+  gin: 'http://127.0.0.1:8080',    // 前端地址
   credentials: true
 }));
+app.use(static(__dirname + '/statics'))
 // xml转换json
 app.use(XMLParser)
 app.use(bodyParser());      // 将模块作为koa的中间件引入

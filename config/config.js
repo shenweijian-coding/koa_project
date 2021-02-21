@@ -1,6 +1,7 @@
 // 数据库
 const app = {
-  dbUrl: 'mongodb://localhost:27017',
+  dbUrl: 'mongodb://127.0.0.1:27017',
+  // dbUrl: 'mongodb://nodejs:swj250176@1.15.123.213:27017',
   dbName:'dbSuCai'
 }
 // cookie
@@ -24,9 +25,14 @@ const sessionConfig = {
   renew: false, // (boolean) 会话即将到期时,续订会话
 }
 // 微信公众号
+// const WXMP = {
+//   appID: 'wx4abdcadb13793f2d',
+//   appSecret: '85c86c0a7db82db92f4883959cb3a662',
+//   token: 'shenweijian'
+// }
 const WXMP = {
-  appID: 'wx4abdcadb13793f2d',
-  appSecret: '85c86c0a7db82db92f4883959cb3a662',
+  appID: 'wx10718ba590743aeb',
+  appSecret: 'fa816a95aae0f46a0d561ea5b9dbb499',
   token: 'shenweijian'
 }
 // redis

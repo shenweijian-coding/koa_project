@@ -35,7 +35,6 @@ function sendMail(adress,cc,subject,username,html) {
        }
    });
 }
-
 // 获取首页信息
 async function getHomeInfo() {
   return new Promise(async(resolve, reject)=>{
@@ -54,7 +53,97 @@ async function otherDownOne() {
     
   })
 }
+// 获取账号信息
+async function getUserInfo(ctx) {
+  return new Promise(async(resolve,reject)=>{
+    try {
+      const openId = ctx.cookies.get('openID')
+      console.log('测试2');
+      const userInfo = await DB.find('userInfo', { 'wxInfo.openId':openId })
+      console.log(userInfo[0]);
+      if(!userInfo.length) resolve({})
+      const res = userInfo[0].webInfo
+      res.email = userInfo[0].email || ''
+      resolve(res)
+    } catch (error) {
+      console.log(error);
+      reject(error)
+    }
+  })
+}
+// 新增数据
+async function addData(ctx) {
+  // 检测email的格式
+  return new Promise(async(resolve,reject)=>{
+    try {
+      const openId = ctx.cookies.get('openID')
+      const { email } = ctx.request.body
+      console.log(openId,email);
+      await DB.update('userInfo',{'wxInfo.openId':openId},{ email:email },{ multi:1 })
+      resolve()
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+// 账号密码进行关联
+async function associatedUserInfo(userID, accountObj){
+  return new Promise((resolve,reject)=>{
+    try {
+      await DB.update('userInfo', {'userId':userID},{'userName':accountObj.account})
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+// 查找用户信息操作
+async function findUserInfo(userId) {
+  return new Promise(async(resolve, reject)=>{
+    try {
+      const userInfo = await DB.find('userInfo', {'userId': userId})
+      if(!userInfo.length) resolve(true) // 未找到
+      resolve(false) // 找到了
+    } catch (error) {
+      reject(error)
+    }
+  })
+}
+// 生成随机账号密码
+function generateAccountPassword(){
+   const randomInfo = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
+  "p","q","r","s","t","u","v","w","x","y","z","A","B","C","D",
+  "E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S",
+  "T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"
+  ]
+  let account = '',pwd = ''
+  for(let i = 0 ; i<8;i++){
+    account += randomInfo[Math.floor(Math.random()*randomInfo.length)]
+    pwd += randomInfo[Math.floor(Math.random()*randomInfo.length)]
+  }
+  return { account, pwd }
+}
+// 添加用户操作
+async function addUserInfo(addInfo) {
+  return new Promise(async(resolve, reject)=>{
+    try {
+      await DB.insert('userInfo', { 'userId': addInfo.FromUserName,'createTime:': addInfo.CreateTime })
+      resolve({})
+    } catch (error) {
+      reject(error)
+    }
+  })
+
+}
+// 寻找账号密码
+async function getUserNamePwd() {}
 module.exports = {
   getHomeInfo,
-  sendMail
+  sendMail,
+  getUserInfo,
+  addData,
+  findUserInfo,
+  addUserInfo,
+  getUserNamePwd,
+  generateAccountPassword,
+  associatedUserInfo
 }

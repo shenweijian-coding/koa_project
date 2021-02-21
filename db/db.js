@@ -21,10 +21,10 @@ class Db{
         if(!_this.dbClient){
           MongoClient.connect(app.dbUrl,{ useUnifiedTopology: true },(err,client)=>{
             if(err){
-              console.log(err)
+              console.log('连接失败'+err)
             }else{
               _this.dbClient = client.db(app.dbName)
-              // console.log(_this.dbClient);
+              console.log('连接成功');
               resolve(_this.dbClient)
             }
           })
@@ -51,10 +51,10 @@ class Db{
     })
   }
 
-  update(collectionName,json1,json2){
+  update(collectionName,json1,json2,json3){
     return new Promise((resolve,reject)=>{
       this.connect().then(db=>{
-        const result = db.collection(collectionName).updateOne(json1,{$set:json2},(err,result)=>{
+        const result = db.collection(collectionName).updateOne(json1,{$set:json2},json3,(err,result)=>{
           if(err){
             reject(err)
           }else{

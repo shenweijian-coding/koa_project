@@ -4,7 +4,15 @@ const { default: axios } = require('axios')
 // 视达网
 async function shida(reqData) {
   // 先查看url是否携带vid 没有则查找 有则直接用
-  const { urlLink } = reqData
+  // Series
+  // VideoInfo
+  const { urlLink} = reqData
+  let c = ''
+  if(urlLink.indexOf('Series') !== -1) {
+    c = 'Series'
+  } else {
+    c = 'videoInfo'
+  }
   const shidaSource =  await request({url:urlLink})
   let vid = shidaSource.match(/Params.vid = '(\S*)';/)[1]
   let isShowDown = /素材\+源文件下载/.test(shidaSource)
@@ -18,15 +26,16 @@ async function shida(reqData) {
   return new Promise(async (resolve,reject)=>{
     try {
       const res = await request({
-        url:'https://shida66.com/?c=VideoInfo&a=getNowPlayUrl',
+        url:`https://shida66.com/?c=${c}&a=getNowPlayUrl`,
         method: 'POST',
         data: d,
         headers:{
           'Cookie':Cookie
         }
       })
-      if(!res.url) resolve({})
-      console.log(res);
+      if(!res.url || res.url === '') resolve({})
+      console.log(res)
+      saveShidaVideoUrl({ d:vid, url:res.url })
       // 携带上vid
       res.vid = vid
       res.isShowDown = isShowDown
@@ -134,6 +143,18 @@ async function fileDownHuke(reqData) {
       reject(error)
     }
   })
+}
+// 存视达网播放视频练级
+async function saveShidaVideoUrl(saveData) {
+  const { d, url } = saveData
+// return new Promise(async(resolve,reject)=>{
+    // 查找库中是否有该url
+    // 有 返回
+    // 没有 存入库中
+    const curVideoUrl = await DB.find('shidaPlayUrl', { 'd': d })
+    if(curVideoUrl.length) return
+    await DB.insert('shidaPlayUrl', { 'd':d, 'url':url })
+  // })
 }
 module.exports={
   shida,
