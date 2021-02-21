@@ -126,7 +126,28 @@ function generateAccountPassword(){
 async function addUserInfo(addInfo) {
   return new Promise(async(resolve, reject)=>{
     try {
-      await DB.insert('userInfo', { 'userId': addInfo.FromUserName,'createTime:': addInfo.CreateTime })
+      const webInfo = {
+        "memberType": 0,
+        "dueTime": "2021-01-01",
+        "videoTime":"2021-01-01",
+        "nitufen": 0,
+        "qiantuNum": 0,
+        "liutuNum": 10,
+        "baotuNum": 0,
+        "sheji90Num": 0,
+        "xiongmaoNum": 0,
+        "qiankuNum": 0,
+        "shetuNum": 10,
+        "tukeNum": 10,
+        "miyuansuNum": 0,
+        "wotuNum": 0,
+        "shidaNum": 10,
+        "hukeNum": 0,
+        "mizhiNum": 0,
+        "tujinglingNum": 10,
+        "zhongtuNum": 0
+      }
+      await DB.insert('userInfo', { 'userId': addInfo.FromUserName,'createTime:': addInfo.CreateTime,'webInfo': webInfo })
       resolve({})
     } catch (error) {
       reject(error)

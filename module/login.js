@@ -35,17 +35,21 @@ function isAttention(ctx){
 // 验证是否允许登录
 async function login(ctx){
   return new Promise(async (resolve,reject)=>{
-    console.log(ctx.request.body);
-    const { userName, userPwd } = ctx.request.body
-    if(!userName || !userPwd) resolve('账号密码不允许为空')
-    // 都填写了  开始验证
-    const userInfo  = await DB.find('userInfo', {'userName':userName})
-    if(userInfo.length !== 1) resolve('暂无该账号信息')
-    if(userInfo[0].userPwd !== crypto.createHash('md5').update(userPwd).digest("hex")) resolve('密码错误')
-    // 账号通过 开始设置cookie
-    ctx.cookies.set('userId',userInfo[0]._id, cookieConfig)
-    ctx.cookies.set('userName',userInfo[0].userName, cookieConfig)
-    resolve('登录成功')
+    try {
+      console.log(ctx.request.body);
+      const { userName, userPwd } = ctx.request.body
+      if(!userName || !userPwd) resolve('账号密码不允许为空')
+      // 都填写了  开始验证
+      const userInfo  = await DB.find('userInfo', {'userName':userName})
+      if(userInfo.length !== 1) resolve('暂无该账号信息')
+      if(userInfo[0].userPwd !== crypto.createHash('md5').update(userPwd).digest("hex")) resolve('密码错误')
+      // 账号通过 开始设置cookie
+      ctx.cookies.set('userId',userInfo[0]._id, cookieConfig)
+      ctx.cookies.set('userName',userInfo[0].userName, cookieConfig)
+      resolve('登录成功')
+    } catch (error) {
+      reject(error)
+    }
   })
 }
 module.exports = { isAttention,login }
