@@ -26,6 +26,10 @@ function isAttention(ctx){
       // 获取cookie内容
       let userId = ctx.cookies.get('userId')
       let userName = ctx.cookies.get('userName')
+      if(!userId || !userName) {
+        resolve(false)
+        return
+      }
       const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
       if(userInfo.length !== 1) resolve(false)
       if(userInfo[0].userName !== userName) resolve(false)
@@ -36,7 +40,6 @@ function isAttention(ctx){
 async function login(ctx){
   return new Promise(async (resolve,reject)=>{
     try {
-      console.log(ctx.request.body);
       const { userName, userPwd } = ctx.request.body
       if(!userName || !userPwd) resolve('账号密码不允许为空')
       // 都填写了  开始验证

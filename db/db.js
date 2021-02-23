@@ -36,7 +36,6 @@ class Db{
   }
 
   find(collectionName,json){
-    // console.log(collectionName,json);
     return new Promise((resolve,reject)=>{
       this.connect().then(db=>{
         const result = db.collection(collectionName).find(json)

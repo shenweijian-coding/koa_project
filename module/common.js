@@ -43,7 +43,7 @@ async function getHomeInfo() {
   return new Promise(async(resolve, reject)=>{
     try {
       const homeInfo = await DB.find('otherInfo', { '_id':ObjectId('602679a622072f47504aca4c')})
-      const dialogInfo = homeInfo[0].homeInfo.dialogInfo
+      const dialogInfo = homeInfo[0].homeInfo
       resolve(dialogInfo)
     } catch (error) {
       reject(error)
@@ -67,7 +67,6 @@ async function getUserInfo(ctx) {
       res.email = userInfo[0].email || ''
       resolve(res)
     } catch (error) {
-      console.log(error);
       reject(error)
     }
   })
@@ -113,14 +112,15 @@ async function findUserInfo(userId) {
 }
 // 生成随机账号密码
 function generateAccountPassword(){
+  const accountInfo = ["0","1","2","3","4","5","6","7","8","9"]
    const randomInfo = ["a","b","c","d","e","f","g","h","i","j","k","l","m","n","o",
   "p","q","r","s","t","u","v","w","x","y","z","A","B","C","D",
   "E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S",
   "T","U","V","W","X","Y","Z","0","1","2","3","4","5","6","7","8","9"
   ]
   let account = '',pwd = ''
-  for(let i = 0 ; i<8;i++){
-    account += randomInfo[Math.floor(Math.random()*randomInfo.length)]
+  for(let i = 0 ; i<6;i++){
+    account += accountInfo[Math.floor(Math.random()*accountInfo.length)]
     pwd += randomInfo[Math.floor(Math.random()*randomInfo.length)]
   }
   return { account, pwd }
@@ -164,7 +164,7 @@ async function wxGongZhongDown(userId, urlLink){
     try {
     const linkArrData = urlLink.split('/') // 先分割成数组
     // 根据urlLink获取网站
-    const reg = RegExp(/58pic|616pic|588ku|ztupic|ibaotu|699pic|nipic|90sheji|tukuppt|16pic|tuke|51yuansu|ooopic|51miz/)
+    const reg = RegExp(/58pic|616pic|588ku|ztupic|shida|huke|ibaotu|699pic|nipic|90sheji|tukuppt|16pic|tuke|51yuansu|ooopic|51miz/)
     if (!reg.test(urlLink)) resolve('暂不支持该网站')
     // 验证通过  开始区分网站类型
     let urlType = ''
@@ -193,7 +193,7 @@ async function wxGongZhongDown(userId, urlLink){
       resolve('请前往网页下载')
     } else if (urlLink.indexOf('nipic') !== -1) {
       urlType = 16
-      resolve('请前往网页下载')
+      resolve('公众号暂不支持,请前往网页下载')
       reqData = { d:linkArrData[4].split('.')[0],a: '6' }
     } else if (urlLink.indexOf('90sheji') !== -1) {
       urlType = 17
@@ -237,16 +237,26 @@ async function wxGongZhongDown(userId, urlLink){
     } else if (urlLink.indexOf('ztupic') !== -1) {
       urlType = 25
       reqData = { d:linkArrData[4].split('.')[0] }
+    } else if (urlLink.indexOf('shida') !== -1) {
+      urlType = 10
+      reqData = { urlLink }
+    } else if (urlLink.indexOf('huke') !== -1) {
+      urlType = 11
+      reqData = { urlLink }
     }
     // 有了网站了 开始校验权限
     const { sign, webName = null } = await validateMember(userId, urlType, 'wx')
-    console.log(sign);
     if (sign !== 1005) { // 没有下载权限
       resolve('您账号不满足下载条件,请前往网页版查看~')
       return
     }
-    const url = await sort({ reqData, urlType })
-    console.log(url);
+    let url = await sort({ reqData, urlType })
+    // 如果是视达虎课  就只返回播放链接
+    if(urlType === 10) {
+      url = url.url
+    }else if(urlType === 11){
+      url = url.videoUrl
+    }
     resolve(url)
     memberSubNum(userId, webName, 'wx')
     } catch (error) {
@@ -261,6 +271,13 @@ async function getWvHelp(){
     resolve(helpInfo[0].helpInfo)
   })
 }
+async function sleep(milliSeconds)  {
+　　return new Promise((resolve, reject) => {
+　　　setTimeout(() => {
+　　　　 resolve();
+  }, milliSeconds);
+　　})
+}
 // 寻找账号密码
 async function getUserNamePwd() {}
 module.exports = {
@@ -274,5 +291,6 @@ module.exports = {
   generateAccountPassword,
   associatedUserInfo,
   wxGongZhongDown,
-  getWvHelp
+  getWvHelp,
+  sleep
 }

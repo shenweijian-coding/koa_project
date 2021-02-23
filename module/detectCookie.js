@@ -15,7 +15,6 @@ async function  testShetu () {
         }
      })
      if (source.indexOf('我的授权') === -1) {
-       console.log('发送成功');
        // 说明掉线了  需要邮箱通知  并删除该cookie
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','摄图','','掉线了')
@@ -187,7 +186,6 @@ function scheduleRecurrenceRule(){
     rule.minute = 0;
     rule.second = 0;
     schedule.scheduleJob(rule, function(){
-      console.log('scheduleRecurrenceRule:' + new Date());
       testShetu()
       testSheji90()
       testZhongtu()

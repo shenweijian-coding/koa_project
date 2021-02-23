@@ -1,6 +1,7 @@
 const axios = require('axios')
 const request = require('./utils/request')
 const dayjs = require('dayjs')
+const { redis } = require('./utils/dbHelper')
 // axios.get('https://download.51miz.com/?m=download&a=download&id=1154782&plate_id=17&format=image',{maxRedirects: 0
 // }).then(res=>{
 //    console.log(res.headers);
@@ -37,12 +38,38 @@ const dayjs = require('dayjs')
 // console.log(day01,day02);
 // console.log(day01<day02)
 
-axios({
-  url: 'http://down.nipic.com/download?id=22893084',
-  headers: {
-    Cookie: 'Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612921212,1613000850,1613092269,1613176108; verifyCode=2dc12ecad790a690; VerifyToken=FTA+rqO7jHUDEj8jpaNcpio73Eyz3Qkj/yvgeEU6mcvPyfmKerGRiXHeYhGLgsK2; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEzIDIwOjI4OjI5XTQ2YjI1NThiOWQyOWYxMWE=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1613181006Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612921212,1613000850,1613092269,1613176108; verifyCode=2dc12ecad790a690; VerifyToken=FTA+rqO7jHUDEj8jpaNcpio73Eyz3Qkj/yvgeEU6mcvPyfmKerGRiXHeYhGLgsK2; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEzIDIwOjI4OjI5XTQ2YjI1NThiOWQyOWYxMWE=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1613181006',
-    Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'  }
-}).then(res=>{
-  const nitufen = res.data.match(/<span><b class="font-tahoma red1"> (\S*) <\/b>/)[1]
-  console.log(nitufen);
-})  
+// axios({
+//   url: 'http://down.nipic.com/download?id=22893084',
+//   headers: {
+//     Cookie: 'Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612921212,1613000850,1613092269,1613176108; verifyCode=2dc12ecad790a690; VerifyToken=FTA+rqO7jHUDEj8jpaNcpio73Eyz3Qkj/yvgeEU6mcvPyfmKerGRiXHeYhGLgsK2; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEzIDIwOjI4OjI5XTQ2YjI1NThiOWQyOWYxMWE=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1613181006Hm_lvt_d60c24a3d320c44bcd724270bc61f703=1612921212,1613000850,1613092269,1613176108; verifyCode=2dc12ecad790a690; VerifyToken=FTA+rqO7jHUDEj8jpaNcpio73Eyz3Qkj/yvgeEU6mcvPyfmKerGRiXHeYhGLgsK2; NSESSIONID=OWViYWZmOGU0ZTUzNjY1Yl0yMDIxLzAyLzEzIDIwOjI4OjI5XTQ2YjI1NThiOWQyOWYxMWE=|31078584|CB250; NIPICLOGIN=; isQuickLogin=0; NipicCode=4; Hm_lpvt_d60c24a3d320c44bcd724270bc61f703=1613181006',
+//     Accept: 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9'  }
+// }).then(res=>{
+//   const nitufen = res.data.match(/<span><b class="font-tahoma red1"> (\S*) <\/b>/)[1]
+//   console.log(nitufen);
+// })
+// async function test() {
+//   for (let i = 0; i < 100; i++) {
+//     console.log(i);
+//     await sleep(1000)
+//   }
+// }
+async function sleep(milliSeconds)  {
+  　　return new Promise((resolve, reject) => {
+  　　　setTimeout(() => {
+  　　　　 resolve();
+      }, milliSeconds);
+  　　})
+}
+async function test() {
+  redis.set('test',true,'EX',1)
+  let isGo = await redis.get('test')
+  console.log(isGo)
+  if(!isGo) console.log('是true')
+  await sleep(1000)
+  isGo = await redis.get('test')
+  console.log(isGo)
+}
+test()
+
+
+// console.log(await redis.get('test'));

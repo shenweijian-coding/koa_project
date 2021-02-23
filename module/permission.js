@@ -22,8 +22,8 @@ async function validateMember(ctx, type, tag = 'web') {
       // 查询解析用户的信息
       const { memberType, dueTime, videoTime } = userInfo[0].webInfo
       // 网站类型
-      const freeWebList = [9, 10, 17, 18, 20, 21, 23] // 免费网站
-      const tollWebList = [8,11, 12, 13, 14, 15, 19, 22, 24, 25] // 收费网站
+      const freeWebList = [9, 10, 18, 20, 21, 22, 23] // 免费网站
+      const tollWebList = [8, 11, 12, 13, 14, 15, 17, 19, 24, 25] // 收费网站
       const totalWeb = new Map([
         [8,'hukeNum'],
         [9,'shidaNum'],
@@ -43,8 +43,7 @@ async function validateMember(ctx, type, tag = 'web') {
         [24,'mizhiNum'],
         [25,'zhongtuNum'],
       ])
-      console.log('开始判断该用户会员');
-      if(type === 1){ // 视频
+      if(type === 1 || type === 11 || type === 12){ // 视频
         if(freeWebList.includes(urlType)){
           const cur = totalWeb.get(urlType)
           if(userInfo[0].webInfo[cur] <= 0) {
@@ -55,7 +54,6 @@ async function validateMember(ctx, type, tag = 'web') {
         }else if(tollWebList.includes(urlType)){
         // 校验日期是否过期
         if(dayjs().format('YYYY-MM-DD') >= videoTime) { // 过期了
-          console.log('该用户已过期');
           resolve ({ sign: 1003 })
         }else{
           // 判断是否达到上限
@@ -68,7 +66,7 @@ async function validateMember(ctx, type, tag = 'web') {
         }
         }
       }else{
-              // 解析用户是普通版本 解析的是免费
+      // 解析用户是普通版本 解析的是免费
       if (memberType === 0 && freeWebList.includes(urlType)) {
         const cur = totalWeb.get(urlType)
         if(userInfo[0].webInfo[cur] <= 0) {
@@ -81,7 +79,6 @@ async function validateMember(ctx, type, tag = 'web') {
       }else if(memberType === 1 && (tollWebList.includes(urlType) || freeWebList.includes(urlType))) { // 解析用户为赞助版 解析的是收费
         // 校验日期是否过期
         if(dayjs().format('YYYY-MM-DD') >= dueTime) { // 过期了
-          console.log('该用户已过期');
           resolve ({ sign: 1003 })
         }else{
           // 判断是否达到上限

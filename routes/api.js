@@ -12,9 +12,13 @@ router.get('/', async (ctx) => {
     ctx.body = 'api默认'
 })
 router.post('/login',async (ctx) => {
-    const msg = await login(ctx)
-    ctx.body = {
-        msg: msg
+    try {
+        const msg = await login(ctx)
+        ctx.body = {
+            msg: msg
+        }
+    } catch (error) {
+        reject(error)
     }
 })
 // 获取用户信息
@@ -33,14 +37,12 @@ router.post('/play', async (ctx) => {
     if (!isLogin) {
         ctx.body = {
             code: 1001,
-            msg: 'error'
+            msg: '请先登录'
         }
         return
     }
     // 验证权限 video视频 播放权限
-    console.log('开始校验权限');
     const { sign, webName = null } = await validateMember(ctx, 1)
-    console.log('验证完毕', sign, webName);
     if (sign === 1002) { // 没有下载权限
         return ctx.body = { code: sign, msg: '您没有观看权限,赶紧去获取赞助版呐~' }
     } else if (sign === 1003) {
@@ -48,7 +50,6 @@ router.post('/play', async (ctx) => {
     } else if (sign === 1004) {
         return ctx.body = { code: sign, msg: '您今日观看次数已用尽,赶紧去获取赞助版呐~' }
     }
-    console.log('开始解析链接')
     // 调用
     const res = await sort(ctx.request.body)
     // 解析成功 相应次数  -1
@@ -66,13 +67,11 @@ router.post('/matter', async (ctx) => {
     if (!userInfo) {
         ctx.body = {
             code: 1001,
-            msg: 'success'
+            msg: '请先登录'
         }
         return
     }
-    console.log('开始校验权限');
     const { sign, webName = null } = await validateMember(ctx)
-    console.log('验证完毕', sign, webName);
     if (sign === 1002) { // 没有下载权限
         return ctx.body = { code: sign, msg: '您没有下载权限,赶紧去获取赞助版呐~' }
     } else if (sign === 1003) {
@@ -82,7 +81,6 @@ router.post('/matter', async (ctx) => {
     }
     // 调用解析
     const res = await sort(ctx.request.body)
-    console.log(res);
     ctx.body = {
         code: 1005,
         url: res
@@ -118,14 +116,7 @@ router.get('/invite', async (ctx) => {
 })
 // 测试 ip
 router.get('/iptest', async (ctx) => {
-    console.log(ctx.req.connection.remoteAddress);
-    console.log(ctx.req.headers['x-forwarded-for'])
-    console.log(ctx.req.connection.remoteAddress)
-    console.log(ctx.req.socket.remoteAddress)
-    console.log(ctx.req.connection.socket.remoteAddress)
-    ctx.body = {
-        ip: ctx.req.connection.remoteAddress
-    }
+
 })
 // 支付接口
 /**
@@ -139,16 +130,6 @@ router.post('/pay', async (ctx) => {
 })
 // 获取首页信息
 router.get('/info', async (ctx) => {
-  // // 验证是否关注
-  // const userInfo = await isAttention(ctx)
-  // // 用户未登录
-  // if (!userInfo) {
-  //   ctx.body = {
-  //     code: 1001,
-  //     msg: 'success'
-  //   }
-  //   return
-  // }
   const res = await getHomeInfo()
   ctx.body = { code: 1, info: res }
 })

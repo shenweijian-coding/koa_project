@@ -12,10 +12,8 @@ async function pay(ctx) {
        * price 价格
        */
     const { pay_id, pay_no, pay_time, price } = ctx.request.body
-    console.log(ctx.request.body);
     await DB.insert('payData', { pay_id, pay_no, pay_time, price })
     const userInfo = await DB.find('userInfo', {'_id': ObjectId(pay_id)})
-    if(userInfo.length !== 1) return console.log('未找到充值用户');
     // 根据付的钱对应权限
     if (price === '70.00' || price === '70') { // 年卡
       const webInfo = {

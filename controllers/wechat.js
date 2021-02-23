@@ -7,6 +7,7 @@ const MPConfig = require('../utils/wechat/helper').MP
 const qr = require('../vendor/qr')
 const DB = require('../db/db');
 const { addUserInfo,findUserInfo,addData,generateAccountPassword, associatedUserInfo, wxGongZhongDown, getWvHelp } = require('../module/common');
+const { ObjectId } = require('mongodb');
 
 const MP = new Wechat(MPConfig)
 
@@ -33,13 +34,12 @@ module.exports = async (ctx, next) => {
     const userID = message.FromUserName
     let body = null
     // 如果是文本消息
-    console.log(message);
     if(msgType === 'text') {
       // 我要账号 
       if(/我要账号/.test(message.Content)){
         // 查找用户信息  有则提示已经有了   没有则发送账号密码
         const userInfo = await findUserInfo(userID)
-        console.log(userInfo);
+        // console.log(userInfo);
         if(!userInfo) {
           body = '账号只能获取1次,您之前已经获取过了,若忘记账号密码,可使用邮箱找回您的账号密码' 
         }else{
@@ -56,10 +56,15 @@ tips:请先使用此账号密码登录,登录后可修改账号密码,方便您�
         }
       }else if(/http/.test(message.Content)){
         const url = await wxGongZhongDown(userID, message.Content)
-        body = `请点击下方连接进行下载
+        if(!url) {
+          body = '服务器错误，请联系管理员~'
+        }else{
+          body = `请点击下方连接
+
 ${url}
-【链接有有效期,请您抓紧下载】
-`
+
+【链接有有效期,请抓紧使用】`
+        }
       }else if(/帮助/.test(message.Content)){
           body = await getWvHelp()
       }else {
@@ -158,13 +163,16 @@ ${url}
 async function subscribe (message) {
   let userID = message.FromUserName
   if (message.Event === 'subscribe') {
-    console.log(userID + '关注了')
-    return '感谢您的关注'
+    // console.log(userID + '关注了')
+    const helpInfo = await DB.find('otherInfo', { '_id':ObjectId('602679a622072f47504aca4c') })
+    return helpInfo[0].helpInfo
   } else {
     // 用户取消关注后我们不能再通过微信的接口拿到用户信息，
     // 如果要记录用户信息，需要从我们自己的用户记录里获取该信息。
     // 所以建议创建用户时除了unionid，最好把openid也保存起来。
-    console.log(userID + '取关了')
+    // console.log(userID + '取关了')
+    DB.update('userInfo',{ 'userId':userID },{ 'isAttention':false }, { multi:1 })
+    // 后期会发送邮件
   }
 }
 
@@ -178,7 +186,6 @@ async function createQRCodeMB (ctx, next) {
   let id = createTimestamp()
 
   let res = await MP.handle('getQRCodeTicket', id)
-  console.log(res);
   if (res === null) errno = 1
   else {
     responseDate = {
@@ -188,7 +195,6 @@ async function createQRCodeMB (ctx, next) {
 
     let imgBuffer = await streamToBuffer(qr.image(res.url))
     let imgSrc = imgBuffer.toString('base64')
-    console.log(imgSrc);
     if (type === 1) {
       // 返回图片
       ctx.body = `<img src="data:image/png;base64,${imgSrc}" />`
@@ -222,7 +228,6 @@ async function createQRCodeMB (ctx, next) {
 async function sweepVerificationCode(ctx, next) {
   let eventKey = ctx.query.id
   const openId = await redis.hget(eventKey, 'openID')
-  console.log(openId);
   if(!openId) {
     ctx.body={ errno: 1 }
     return
@@ -234,7 +239,6 @@ async function sweepVerificationCode(ctx, next) {
   }
   // 将用户名编码
   let userName = Buffer.from(userInfo[0].wxInfo.name).toString('base64')
-  console.log(userInfo)
   // 扫码通过  进行cookie发送
   ctx.cookies.set('eventKey', eventKey, cookieConfig)
   ctx.cookies.set('openID', openId, cookieConfig)

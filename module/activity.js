@@ -9,7 +9,6 @@ async function inviteHandlePeople (inviteInfo) {
       if(!userInfo.length) resolve('查找失败')
       // 找到对应的code  填入数据库
       const res = await DB.insert('userInfo',{ 'inviteInfo.inviteUserList': inviteCode })
-      console.log(res);
       resolve('success')
     } catch (error) {
       reject(error)

@@ -20,7 +20,6 @@ async function miyuansu(reqData) {
   const url = `http://www.51yuansu.com/index.php?m=ajax&a=${a}&id=${d}`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'miyuansu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   // 请求播放链接
@@ -48,7 +47,6 @@ async function tukebaba(reqData) {
   const url = `http://www.tuke88.com/index/down?callback=jQuery17103538063143495809_1611489882849&pid=${d}&_=${t}`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'tukebaba' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -61,7 +59,6 @@ async function tukebaba(reqData) {
       })
       if(!res) resolve({})
       const downurl = JSON.parse(res.match(/{(\S*)}/)[0]).downurl
-      console.log(downurl);
       resolve(downurl)
     } catch (error) {
       reject(error)
@@ -81,11 +78,9 @@ async function mizhi(reqData) {
   const url = `https://download.51miz.com/?m=download&a=download&id=${d}&plate_id=${a.a}&format=${a.f}`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'mizhi' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
-    console.log('url', url);
     try {
       const res = await request({
         url: url,
@@ -95,10 +90,7 @@ async function mizhi(reqData) {
         }
       })
       if(!res) resolve({})
-      // https://down.51miz.com/ 代理转发
-      // http://127.0.0.1/element/00/89/58/41/51miz-E895841-B39F85F7.png
-      downurl = res.replace('https://down.51miz.com', 'http://127.0.0.1:3001')
-      console.log(downurl)
+      downurl = res.replace('https://down.51miz.com', 'http://clumsybird.work:3001')
       resolve(downurl)
     } catch (error) {
       reject(error)
@@ -127,7 +119,6 @@ async function baotu(reqData) {
   const url = `https://ibaotu.com/?m=downloadopen&a=open&id=${d}&down_type=1&&attachment_id=`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'baotu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -139,7 +130,7 @@ async function baotu(reqData) {
           Cookie: cookie,
         }
       })
-      console.log(res)
+      if(!res) resolve()
       resolve(res)
     } catch (error) {
       reject(error)
@@ -166,7 +157,7 @@ async function shetu(reqData) {
       repData = 4
     } else if (type.includes('ppt')) {// ppt
       repData = 5
-    } else if (type.includes('muban')) {// 设计模板
+    } else if (type.includes('vector')) {// 设计模板
       repData = 6
     } else if (type.includes('yuansu')) { // 免扣元素
       repData = 7
@@ -199,12 +190,9 @@ async function shetu(reqData) {
   let url = `https://699pic.com/${urlLink}`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'shetu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
-    console.log('提交参数:', reqShetuData);
-    console.log("提交地址", url);
     try {
       const res = await request({
         url: url,
@@ -215,7 +203,6 @@ async function shetu(reqData) {
         },
         data:reqShetuData
       })
-      console.log(res);
       if(res.hasOwnProperty('url')){
         resolve(res.url)
       }else if(res.hasOwnProperty('src')){
@@ -231,11 +218,9 @@ async function shetu(reqData) {
 // 昵图
 async function nitu(ctx) {
   const { a, d } = ctx.request.body
-  console.log(a, d);
   const url = 'http://down.nipic.com/ajax/download_go'
   // 查找cookie
   const result = await DB.find('cookie', { name: 'nitu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -279,7 +264,6 @@ async function sheji90(reqData) {
   const url = 'http://90sheji.com/index.php?m=inspireAjax&a=getDownloadLink'
   // 查找cookie
   const result = await DB.find('cookie', { name: 'sheji90' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -294,7 +278,7 @@ async function sheji90(reqData) {
         },
         data: `id=${d}`
       })
-      console.log(res)
+      if(!res.link) resolve({})
       resolve(res.link)
     } catch (error) {
       reject(error)
@@ -318,7 +302,6 @@ async function xiongmao(reqData) {
   const url = `https://www.tukuppt.com/index/down?callback=jQuery171019846911166143233_1612348431741&pid=${d}&code=&ispng=0&_=${t}`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'xiongmao' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -343,7 +326,6 @@ async function tujingling(reqData) {
   return new Promise(async (resolve, reject) => {
      // 查找cookie
     const result = await DB.find('cookie', { name: 'tujingling' })
-    console.log('开始查找cookie');
     const cookie = result[0].cookie
     if (!cookie) return
     try {
@@ -353,7 +335,6 @@ async function tujingling(reqData) {
           Cookie:cookie
         }
       })
-      console.log(res)
       resolve(res.url)
     } catch (error) {
       reject(error)
@@ -366,7 +347,6 @@ async function wotuvip(reqData) {
   const url = `https://downloads.ooopic.com/down_newfreevip.php?action=down&id=${d}&token=&_Track=657370b92f802e1f655d0c780db69fca&detailv=`
   // 查找cookie
   const result = await DB.find('cookie', { name: 'wotu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject) => {
@@ -378,7 +358,6 @@ async function wotuvip(reqData) {
           Cookie: cookie
         }
       })
-      console.log(res)
       resolve(res)
     } catch (error) {
 
@@ -390,7 +369,6 @@ async function zhongtu(reqData) {
   const { d } = reqData
   // 查找cookie
   const result = await DB.find('cookie', { name: 'zhongtu' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject)=>{
@@ -403,9 +381,8 @@ async function zhongtu(reqData) {
         },
         data: 'id='+d
       })
-      console.log(res)
       if(!res.data) resolve({})
-      const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://127.0.0.1:3001')
+      const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://clumsybird.work:3001')
       resolve(downUrl)
     } catch (error) {
       reject(error)
@@ -416,7 +393,6 @@ async function zhongtu(reqData) {
 async function gaoding(url) {
   // 查找cookie
   const result = await DB.find('cookie', { name: 'gaoding' })
-  console.log('开始查找cookie');
   const cookie = result[0].cookie
   if (!cookie) return
   return new Promise(async (resolve, reject)=>{
@@ -436,6 +412,7 @@ async function gaoding(url) {
     }
   })
 }
+
 module.exports = {
   miyuansu,
   tukebaba,

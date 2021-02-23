@@ -1,6 +1,7 @@
 const request = require('../utils/request')
 const DB = require('../db/db')
 const { default: axios } = require('axios')
+const { redis } = require('../utils/dbHelper')
 // 视达网
 async function shida(reqData) {
   // 先查看url是否携带vid 没有则查找 有则直接用
@@ -19,7 +20,6 @@ async function shida(reqData) {
   let d = `vid=${vid}`
   // 查找视达cookie
   const result = await DB.find('cookie',{ name:'shida' })
-  console.log('开始查找cookie')
   const Cookie = result[0].cookie
   if(!Cookie) return
   // 万事俱备  请求播放链接
@@ -34,7 +34,6 @@ async function shida(reqData) {
         }
       })
       if(!res.url || res.url === '') resolve({})
-      console.log(res)
       saveShidaVideoUrl({ d:vid, url:res.url })
       // 携带上vid
       res.vid = vid
@@ -47,28 +46,26 @@ async function shida(reqData) {
 }
 // 虎课网
 async function huke(reqData) {
-  // 查找视达cookie
-  const result = await DB.find('cookie',{ name:'huke' })
-  console.log('开始查找cookie')
-  const Cookie = result[0].cookie
-  if(!Cookie) return
-  // 获取视频链接 必须是手机链接
-  let { urlLink } = reqData
-  urlLink = urlLink.replace('huke88.com', 'm.huke88.com')
-  const hukeId = urlLink.match(/course\/(\S*)\.html/)[1]
-  console.log(urlLink);
-  const hukeSource =  await request({
-    url:urlLink,
-    headers: {
-      Cookie: Cookie
-    }
-  })
-  let _csrfFrontend = hukeSource.match(/csrf-token" content="(\S*)"/)[1]
-  console.log(hukeId, _csrfFrontend);
-  const url = `https://m.huke88.com/video/video-url`
-
   return new Promise(async(resolve, reject)=>{
     try {
+      const isGo = await redis.get('huke')
+      if(isGo == true) resolve({})
+      // 查找视达cookie
+      const result = await DB.find('cookie',{ name:'huke' })
+      const Cookie = result[0].cookie
+      if(!Cookie) return
+      // 获取视频链接 必须是手机链接
+      let { urlLink } = reqData
+      urlLink = urlLink.replace('huke88.com', 'm.huke88.com')
+      const hukeId = urlLink.match(/course\/(\S*)\.html/)[1]
+      const hukeSource =  await request({
+        url:urlLink,
+        headers: {
+          Cookie: Cookie
+        }
+      })
+      let _csrfFrontend = hukeSource.match(/csrf-token" content="(\S*)"/)[1]
+      const url = `https://m.huke88.com/video/video-url`
       const res = await request({
         url: url,
         method: 'POST',
@@ -79,11 +76,11 @@ async function huke(reqData) {
         data: `id=${hukeId}&_csrf-frontend=${_csrfFrontend}`
         // data: 'id=67251&_csrf-frontend=HtUJbRqTYfV7LorYYVyuPLhPctnqT8ODZhT5tXQYWThPr0ccKukgkExvuI8CC8d1jgFClJs49NQtLc7NQH86Uw%3D%3D'
       })
-      console.log(res)
       res.data.sign = _csrfFrontend
       res.data.d = hukeId
       // res.data.isShowDown = isShowDown
       resolve(res.data)
+      redis.set('huke',true,'EX',2)
     } catch (error) {
       reject(error)
     }
@@ -95,7 +92,6 @@ async function videoFileDown(reqData){
   return new Promise(async (resolve,reject)=>{
     // 查找视达cookie
     const result = await DB.find('cookie',{ name:'shida' })
-    console.log('开始查找cookie')
     const Cookie = result[0].cookie
     if(!Cookie) return
     const res = await request({
@@ -105,7 +101,6 @@ async function videoFileDown(reqData){
         'X-Requested-With': 'XMLHttpRequest'
       }
     })
-    console.log(res);
     if(!res.source) resolve({})
     resolve(res.source)
   })
@@ -116,7 +111,6 @@ async function fileDownHuke(reqData) {
     try {
     // 查找视达cookie
     const result = await DB.find('cookie',{ name:'huke' })
-    console.log('开始查找cookie')
     const Cookie = result[0].cookie
     if(!Cookie) return
     const { d , type, urlLink } = reqData
@@ -127,7 +121,6 @@ async function fileDownHuke(reqData) {
       }
     })
     let sign = hukeSource.match(/csrf-token" content="(\S*)"/)[1]
-    console.log(sign);
     const res = await request({
       url:'https://huke88.com/download/ajax-download-source-case',
       method:'POST',
@@ -136,7 +129,6 @@ async function fileDownHuke(reqData) {
         Cookie: Cookie
       }
     })
-    console.log(res);
     if(!res) resolve({})
     resolve(res.download_url)
     } catch (error) {

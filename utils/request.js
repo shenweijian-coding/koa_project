@@ -21,11 +21,9 @@ service.interceptors.response.use(
     }
   },
   error => {
-    // console.log(error.response);
     if(error.response.status === 302){
       return Promise.resolve(error.response.headers.location)
     }
-    console.log('err' + error)
   }
 )
 module.exports = service
