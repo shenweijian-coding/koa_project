@@ -86,6 +86,27 @@ async function addData(ctx) {
     }
   })
 }
+
+// 更新密码
+async function updatePwd(ctx) {
+  return new Promise(async(resolve,reject)=>{
+    const { oldPwd, newPwd } = ctx.request.body
+    const userId = ctx.cookies.get('userId')
+    const userInfo = await DB.find('userInfo', { '_id':ObjectId(userId) })
+    if(userInfo.length !== 1) {
+      resolve({ code: -1, msg:'未找到用户' })
+      return
+    }
+    const oldPwdMd5 = crypto.createHash('md5').update(oldPwd).digest("hex")
+    const newPwdMd5 = crypto.createHash('md5').update(newPwd).digest("hex")
+    if(oldPwdMd5 == userInfo[0].userPwd){
+      await DB.update('userInfo', { '_id':ObjectId(userId) }, { 'userPwd': newPwdMd5 })
+      resolve({ code: 1, msg:'密码更新成功' })
+    }else {
+      resolve({ code:-1, msg: '密码更新失败' })
+    }
+  })
+}
 // 账号密码进行关联
 async function associatedUserInfo(userID, accountObj){
   return new Promise(async(resolve,reject)=>{
@@ -293,5 +314,6 @@ module.exports = {
   associatedUserInfo,
   wxGongZhongDown,
   getWvHelp,
-  sleep
+  sleep,
+  updatePwd
 }

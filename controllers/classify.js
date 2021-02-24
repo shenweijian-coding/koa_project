@@ -33,7 +33,8 @@ module.exports = async function sort(ctx) {
   const cookie = result[0].cookie[i]
   if (++i >= cookieLength) i = 0
   redis.set(curDownWebName,i)
-  const resData = eval(`${curDownWebName}(${JSON.stringify(reqData)},${JSON.stringify(cookie)})`)
+  console.log(curDownWebName);
+  const resData = await eval(`${curDownWebName}(${JSON.stringify(reqData)},${JSON.stringify(cookie)})`)
   return resData
 
   // switch (urlType) {

@@ -60,6 +60,7 @@ async function mizhi(reqData, cookie) {
           Cookie: cookie,
         }
       })
+      console.log(res);
       if(!res) resolve({})
       downurl = res.replace('https://down.51miz.com', 'http://clumsybird.work:3001')
       resolve(downurl)
@@ -194,7 +195,10 @@ async function nitu(ctx) {
       const userId = ctx.cookies.get('userId')
       const userInfo = await DB.find('userInfo', {"_id":ObjectId(userId)})
       const userNitufen = userInfo[0].webInfo.nitufen
-      if (userNitufen < nitufen) resolve('昵图共享分不足')
+      if (userNitufen < nitufen){
+        resolve('昵图分不足，快去获取赞助版呐')
+        return
+      }
       const res = await request({
         url: url,
         method: 'POST',

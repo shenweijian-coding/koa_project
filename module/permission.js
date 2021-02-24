@@ -18,6 +18,9 @@ async function validateMember(ctx, type, tag = 'web') {
         urlType = type
         userInfo = await DB.find('userInfo', { 'userId': userId })
       }
+      if (userInfo.length !== 1) {
+        resolve("您还未注册账号,请发送“我要账号”至本公众号,登录网址 http://clumsybird.work")
+      }
       // 获取网站类型
       // 查询解析用户的信息
       const { memberType, dueTime, videoTime, allDownNum } = userInfo[0].webInfo
@@ -114,12 +117,13 @@ async function memberSubNum(ctx, webName, tag = 'web') {
         userId = ctx
         userInfo = await DB.find('userInfo', { 'userId':userId })
       }
-      const addDownNum = userInfo[0].webInfo.addDownNum
-      if( addDownNum > 0 ) {
+      console.log('开始减次数');
+      const allDownNum = userInfo[0].webInfo.allDownNum
+      if( allDownNum > 0 ) {
         if(tag === 'web') {
-          await DB.update('userInfo',  {'_id':ObjectId(userId)}, { 'webInfo.allDownNum': addDownNum -1 })
+          await DB.update('userInfo',  {'_id':ObjectId(userId)}, { 'webInfo.allDownNum': allDownNum -1 })
         }else{
-          await DB.update('userInfo', {'userId':userId}, { 'webInfo.allDownNum': addDownNum -1 })
+          await DB.update('userInfo', {'userId':userId}, { 'webInfo.allDownNum': allDownNum -1 })
         }
         return
       }

@@ -1,6 +1,6 @@
 const sort = require('../controllers/classify');
 const { inviteHandlePeople } = require('../module/activity');
-const { getHomeInfo, getUserInfo, addData } = require('../module/common');
+const { getHomeInfo, getUserInfo, addData, updatePwd } = require('../module/common');
 const { isAttention, login } = require('../module/login');
 const { nitu } = require('../module/matter');
 const { pay } = require('../module/pay');
@@ -71,6 +71,7 @@ router.post('/matter', async (ctx) => {
         }
         return
     }
+    console.log('判断权限');
     const { sign, webName = null } = await validateMember(ctx)
     if (sign === 1002) { // 没有下载权限
         return ctx.body = { code: sign, msg: '您没有下载权限,赶紧去获取赞助版呐~' }
@@ -79,12 +80,15 @@ router.post('/matter', async (ctx) => {
     } else if (sign === 1004) {
         return ctx.body = { code: sign, msg: '您今日下载次数已用尽,赶紧去获取赞助版呐~' }
     }
+    console.log('调用解析');
     // 调用解析
     const res = await sort(ctx.request.body)
+    console.log(res);
     ctx.body = {
         code: 1005,
         url: res
     }
+    console.log('减次数');
     // 解析成功 相应次数  -1
     await memberSubNum(ctx, webName)
 })
@@ -102,9 +106,16 @@ router.post('/nitu', async (ctx) => {
     }
     // 昵图网解析开始
     const res = await nitu(ctx)
-    ctx.body = {
-        code: 1005,
-        url: res
+    if(res.includes('http')){
+        ctx.body = {
+            code: 1005,
+            url: res
+        }
+    }else{
+        ctx.body = {
+            code: 1001,
+            msg: res
+        }
     }
 })
 // 邀请人
@@ -166,5 +177,21 @@ router.post('/add', async(ctx)=> {
 					code: 1001,
 					msg: '添加成功'
 			}
+})
+// 更新密码
+router.post('/updatepwd', async(ctx)=>{
+   	  // 验证是否关注
+		const userInfo = await isAttention(ctx)
+		// 用户未登录
+		if (!userInfo) {
+			ctx.body = {
+				code: 1001,
+				msg: 'success'
+			}
+			return
+		}
+        const res = await updatePwd(ctx)
+        ctx.body = res
+
 })
 module.exports = router.routes();

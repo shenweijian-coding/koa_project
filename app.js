@@ -7,7 +7,7 @@ const XMLParser = require('./middlewares/XMLParser')
 const bodyParser= require('koa-bodyparser')
 // const sslify = require('koa-sslify').default;
 const path = require('path')
-// const compress = require('koa-compress');
+const compress = require('koa-compress');
 //引入子模块
 const admin=require('./routes/admin.js')
 const api=require('./routes/api.js')
@@ -18,15 +18,18 @@ const wechat = require('./routes/wechat')
 const app=new Koa();
 // 代理转发
 // 解决跨域
-
+const options = {
+  threshold: 1024
+}
+app.use(compress(options))
 const httpsOption = {
   key: fs.readFileSync('./config/2_clumsybird.work.key'),
   cert: fs.readFileSync('./config/1_clumsybird.work.pem'),
 } 
-app.use(cors({
-  origin: 'http://localhost:8080',
-  credentials: true
-}));
+// app.use(cors({
+//   origin: 'http://localhost:8080',
+//   credentials: true
+// }));
 // xml转换json
 app.use(XMLParser)
 app.use(bodyParser());      // 将模块作为koa的中间件引入
@@ -63,7 +66,7 @@ app.use(router.routes()).use(router.allowedMethods());
 // http.createServer(app.callback()).listen(3000)
 // https.createServer(httpsOption, app.callback()).listen(3001)
 // 启动
-app.listen(3000, ()=>{
+app.listen(80, ()=>{
   console.log('服务已经启动')
 });
 
