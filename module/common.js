@@ -134,20 +134,21 @@ async function addUserInfo(addInfo) {
         "dueTime": "2021-01-01",
         "videoTime":"2021-01-01",
         "nitufen": 0,
+        "allDownNum":0,
         "qiantuNum": 0,
-        "liutuNum": 10,
+        "liutuNum": 5,
         "baotuNum": 0,
         "sheji90Num": 0,
         "xiongmaoNum": 0,
         "qiankuNum": 0,
-        "shetuNum": 10,
-        "tukeNum": 10,
-        "miyuansuNum": 0,
-        "wotuNum": 0,
+        "shetuNum": 0,
+        "tukeNum": 5,
+        "miyuansuNum": 5,
+        "wotuNum": 5,
         "shidaNum": 10,
         "hukeNum": 0,
         "mizhiNum": 0,
-        "tujinglingNum": 10,
+        "tujinglingNum": 5,
         "zhongtuNum": 0
       }
       await DB.insert('userInfo', { 'userId': addInfo.FromUserName,'createTime:': addInfo.CreateTime,'webInfo': webInfo })
@@ -181,7 +182,7 @@ async function wxGongZhongDown(userId, urlLink){
       }
     } else if (urlLink.indexOf('588ku') !== -1) {
       urlType = 13
-      reqData = { urlLink }
+      reqData = { urlLink,code: 2 }
     } else if (urlLink.indexOf('616pic') !== -1) {
       urlType = 21
       reqData = { d:linkArrData[4].split('.')[0], a: 1 }
@@ -193,7 +194,7 @@ async function wxGongZhongDown(userId, urlLink){
       resolve('请前往网页下载')
     } else if (urlLink.indexOf('nipic') !== -1) {
       urlType = 16
-      resolve('公众号暂不支持,请前往网页下载')
+      // resolve('公众号暂不支持,请前往网页下载')
       reqData = { d:linkArrData[4].split('.')[0],a: '6' }
     } else if (urlLink.indexOf('90sheji') !== -1) {
       urlType = 17
@@ -247,7 +248,7 @@ async function wxGongZhongDown(userId, urlLink){
     // 有了网站了 开始校验权限
     const { sign, webName = null } = await validateMember(userId, urlType, 'wx')
     if (sign !== 1005) { // 没有下载权限
-      resolve('您账号不满足下载条件,请前往网页版查看~')
+      resolve('您账号不满足下载条件,请前往网页版查看 http://clumsybird.work')
       return
     }
     let url = await sort({ reqData, urlType })

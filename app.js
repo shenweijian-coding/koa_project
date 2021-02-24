@@ -11,8 +11,8 @@ const path = require('path')
 //引入子模块
 const admin=require('./routes/admin.js')
 const api=require('./routes/api.js')
-const https = require('https')
-const http = require('http')
+// const https = require('https')
+// const http = require('http')
 const fs = require('fs')
 const wechat = require('./routes/wechat')
 const app=new Koa();
@@ -50,6 +50,13 @@ router.use('/api',api);   /*在模块里面暴露路由并且启动路由*/
  * wechat
  */
 router.use('/wechat',wechat)
+
+app.use(async (ctx, next) => {
+  await next();
+  if(parseInt(ctx.status) === 404 ){
+    ctx.response.redirect("/")
+  }
+})
 //启动路由
 app.use(router.routes()).use(router.allowedMethods());
 

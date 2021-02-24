@@ -20,7 +20,7 @@ async function validateMember(ctx, type, tag = 'web') {
       }
       // 获取网站类型
       // 查询解析用户的信息
-      const { memberType, dueTime, videoTime } = userInfo[0].webInfo
+      const { memberType, dueTime, videoTime, allDownNum } = userInfo[0].webInfo
       // 网站类型
       const freeWebList = [9, 10, 18, 20, 21, 22, 23] // 免费网站
       const tollWebList = [8, 11, 12, 13, 14, 15, 17, 19, 24, 25] // 收费网站
@@ -75,7 +75,11 @@ async function validateMember(ctx, type, tag = 'web') {
           resolve({ sign:1005, webName:cur })
         }
       }else if(memberType === 0 && tollWebList.includes(urlType)){ // 解析用户为普通版 解析的是收费
-        return  resolve({ sign:1002 })
+        if(allDownNum > 0) {
+          resolve({ sign:1005 })
+        }else{
+          resolve({ sign:1002 })
+        }
       }else if(memberType === 1 && (tollWebList.includes(urlType) || freeWebList.includes(urlType))) { // 解析用户为赞助版 解析的是收费
         // 校验日期是否过期
         if(dayjs().format('YYYY-MM-DD') >= dueTime) { // 过期了
@@ -110,9 +114,18 @@ async function memberSubNum(ctx, webName, tag = 'web') {
         userId = ctx
         userInfo = await DB.find('userInfo', { 'userId':userId })
       }
+      const addDownNum = userInfo[0].webInfo.addDownNum
+      if( addDownNum > 0 ) {
+        if(tag === 'web') {
+          await DB.update('userInfo',  {'_id':ObjectId(userId)}, { 'webInfo.allDownNum': addDownNum -1 })
+        }else{
+          await DB.update('userInfo', {'userId':userId}, { 'webInfo.allDownNum': addDownNum -1 })
+        }
+        return
+      }
       const downNum = userInfo[0].webInfo[webName] - 1
       const property = "webInfo." + webName
-      if(tag === 'web'){
+      if(tag === 'web') {
         await DB.update('userInfo', {'_id':ObjectId(userId)}, { [property]: downNum })
       }else{
         await DB.update('userInfo', {'userId':userId}, { [property]: downNum }) 

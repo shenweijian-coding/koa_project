@@ -22,6 +22,7 @@ service.interceptors.response.use(
   },
   error => {
     if(error.response.status === 302){
+      // console.log(error.response.headers);
       return Promise.resolve(error.response.headers.location)
     }
   }

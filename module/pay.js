@@ -21,6 +21,7 @@ async function pay(ctx) {
         "dueTime": dayjs().add(1, 'year').format('YYYY-MM-DD'),
         "videoTime": userInfo[0].webInfo.videoTime,
         "nitufen": userInfo[0].webInfo.nitufen,
+        "allDonwNum":0,
         "qiantuNum": 10,
         "liutuNum": 20,
         "baotuNum": 10,
@@ -45,6 +46,7 @@ async function pay(ctx) {
         "videoTime": userInfo[0].webInfo.videoTime,
         "nitufen": userInfo[0].webInfo.nitufen,
         "qiantuNum": 10,
+        "allDonwNum":0,
         "liutuNum": 20,
         "baotuNum": 10,
         "sheji90Num": 20,
@@ -70,6 +72,8 @@ async function pay(ctx) {
     } else if (price === '30.00' || price === '30') { // 虎课
       const videoTime =dayjs().add(1, 'year').format('YYYY-MM-DD')
       await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.videoTime':videoTime})
+    } else if (price === '1.00' || price === '1') { // 仅下载1次
+      await DB.update('userInfo', {'_id':ObjectId(pay_id)},{ 'webInfo.allDownNum': 1 })
     }
     // 根据openId获取用户数据
     resolve({})
