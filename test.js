@@ -86,20 +86,20 @@ const dayjs = require('dayjs')
 // const tag = 'test'
 // eval(`${tag}()`)
 // console.log(await redis.get('test'));
-request({
-  url: 'https://www.ppt118.com/resdl?id=aadba7f3',
-  headers: {
-    Cookie: 'ci_session=ghjieccev214hjnps6epmfbskphd2lm7; id=10634608; user_logo=%2F%2Fthirdqq.qlogo.cn%2Fg%3Fb%3Doidb%26k%3DSdGx2ysJpZoSV0vJfib6n2w%26s%3D100%26t%3D1604720818; time=2019-11-29+20%3A21%3A37; nickname=ClumsyBird; key=552fd7c731540cdfdf19000939e62cc8; user_state_ppt=1; login_type=qq; dm_refer=https%3A%2F%2Fwww.ppt118.com%2F; UM_distinctid=177d190d997175-0b0c88205907508-4c3f217f-144000-177d190d998f7; CNZZDATA1274869199=2099486350-1614125684-https%253A%252F%252Fwww.ppt118.com%252F%7C1614125684; CNZZDATA1274869202=544971973-1614124541-https%253A%252F%252Fwww.ppt118.com%252F%7C1614124541',
-    'Upgrade-Insecure-Requests': 1,
-    Host: 'www.ppt118.com',
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:85.0) Gecko/20100101 Firefox/85.0',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'zh-CN,zh;q=0.8,zh-TW;q=0.7,zh-HK;q=0.5,en-US;q=0.3,en;q=0.2',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive'
+
+
+function test() {
+  eval('handleResponse({"code":200,"msg":"请求成功","data":{"status":0,"msg":"可以下载","type":13,"isvip":1,"id":10457069,"keyword":null,"url":"https:\/\/down-qn.588ku.com\/element_origin_pic\/19\/05\/24\/aea6c2f5316481025a339caf3d59d8b6.png?_upd=true\u0026sign=c32dcf719c9bf0a56ce6d5587ae84dc8\u0026t=60376dd4\u0026n=千库网_篮球培训班火热招生中_艺术字编号10457069.png","photo_right_warn":0}})')
+  const handleResponse = (data) => {
+    return data.data.url
   }
-}).then(res=>{
-  console.log('结果'+res)
-}).catch(err=>{
-  console.log(err);
-})
+  console.log('haha');
+  console.log();
+  const res = {
+    a:1
+  }
+  if(res?.a){
+    console.log(res.a);
+  }
+}
+test()

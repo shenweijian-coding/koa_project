@@ -29,7 +29,6 @@ module.exports = async function sort(ctx) {
   // 先取出 cookie 的长度
   const cookieLength = result[0].cookie.length
   let i = await redis.get(curDownWebName) || 0
-  console.log(i);
   const cookie = result[0].cookie[i]
   if (++i >= cookieLength) i = 0
   redis.set(curDownWebName,i)

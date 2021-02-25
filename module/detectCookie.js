@@ -7,7 +7,7 @@ async function  testShetu () {
   return new Promise(async(resolve, reject)=>{
     try {
     const result = await DB.find('cookie', { name: 'shetu' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'http://699pic.com/community/myPermission',
@@ -30,7 +30,7 @@ async function  testShetu () {
 async function  testBaotu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'baotu' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'https://ibaotu.com/?m=home&a=myDownload',
@@ -50,7 +50,7 @@ async function  testBaotu () {
 async function  testMizhi () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'mizhi' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'https://www.51miz.com/index.php?m=home&a=myvip',
@@ -70,7 +70,7 @@ async function  testMizhi () {
 async function  testMiyuansu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'miyuansu' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'http://www.51yuansu.com/index.php?m=user',
@@ -90,7 +90,8 @@ async function  testMiyuansu () {
 async function  testXiongmao () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'xiongmao' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
+    console.log(cookies);
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'https://www.tukuppt.com/index/usercenter/info',
@@ -110,7 +111,7 @@ async function  testXiongmao () {
 async function  testTuke () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tukebaba' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'http://www.tuke88.com/user/center',
@@ -130,7 +131,7 @@ async function  testTuke () {
 async function  testTujingling () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tujingling' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'http://616pic.com/user/favorite',
@@ -150,7 +151,7 @@ async function  testTujingling () {
 async function  testZhongtu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'zhongtu' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'https://www.ztupic.com/user/center',
@@ -170,7 +171,7 @@ async function  testZhongtu () {
 async function  testSheji90 () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'sheji90' })
-    const cookies = result[0]
+    const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'http://90sheji.com/u/2774472/?a=selfEdit',
@@ -189,9 +190,10 @@ async function  testSheji90 () {
 
 function scheduleRecurrenceRule(){
   const rule = new schedule.RecurrenceRule()
-    rule.minute = 0;
+     // rule.minute = 0;
     rule.second = 0;
     schedule.scheduleJob(rule, function(){
+      console.log('开始检测');
       testShetu()
       testSheji90()
       testZhongtu()

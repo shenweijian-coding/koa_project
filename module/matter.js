@@ -60,7 +60,6 @@ async function mizhi(reqData, cookie) {
           Cookie: cookie,
         }
       })
-      console.log(res);
       if(!res) resolve({})
       downurl = res.replace('https://down.51miz.com', 'http://clumsybird.work:3001')
       resolve(downurl)
@@ -77,8 +76,91 @@ async function qiantu(reqData, cookie) {
 }
 // 千库
 async function qianku(reqData, cookie) {
-  const res = gaoding(reqData, cookie)
-  return res
+  return new Promise(async(resolve,reject)=>{
+    // 先获取下载配置
+    const { urlLink, a } = reqData
+    const tag = urlLink.split('/')[3] // 素材类型标识
+    const d = urlLink.split('/')[4].split('.')[0] // 素材id
+    if(!a) { // 第一次解析  查找下载配置选项
+      const oneDownFormat = 'office,sheyingtu,uiweb,ycaudio,video'
+      const twoDownFormat = 'ichahua,gif1,ycbeijing,ycpng,ycwordart,moban'
+      let downOption = ''
+      if (oneDownFormat.includes(tag)) { // 一个下载选项
+        downOption = 1
+      } else if (twoDownFormat.includes(tag)) { // 两个下载选项
+        downOption = 2
+      }
+      resolve(downOption)
+      return
+    }else{ // 第二次解析 查找链接
+      if(!cookie.includes('588ku')){
+        const res = await gaoding(reqData, cookie, a)
+        resolve(res)
+        return
+      }
+      const downType = a === 1 ? 'pic' : 'rar'
+      const time = new Date().getTime()
+      const ip = '183.199.244.80'
+      let url = ''
+      if(tag === 'office') {
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=4&picid=${d}&refererUrl=&video_senses=1&_=${time}`
+      }else if(tag === 'sheyingtu'){
+        url = `https://dl.588ku.com/down/pic?callback=handleResponse&type=10&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fsheyingtu%2F0-0-default-0-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'uiweb'){
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=9&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fui%2F0-0-default-0-0-0-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'ycaudio'){
+        url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=8&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Faudio%2F0-0-0-0-0-0-default-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'video') {
+        url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=5&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fvideo%2F1-0-0-0-pr-0-0%2F&video_senses=1&_=${time}`
+      }else if(tag === 'moban') {
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=3&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fmoban%2F0-default-0-0-0-0-0-0-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'ycwordart') {
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=6&picid=${d}&refererUrl=&video_senses=1&_=${time}`
+      }else if(tag === 'ycpng'){
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=1&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fsucai%2F0-default-0-0-0-0-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'ycbeijing'){
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=2&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fbeijing%2F0-0-default-0-8-0-0-0-0-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'gif1') {
+        url =`https://dl.588ku.com/down/${downType}?callback=handleResponse&type=11&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fgif%2F0-0-0-default-1%2F&video_senses=1&_=${time}`
+      }else if(tag === 'ichahua') {
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=7&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fchahua%2F0-0-default-0-0%2F&video_senses=1&_=${time}`
+      }
+      let res = await request({
+        url: url,
+        headers: {
+          Cookie: cookie,
+          'x-forwarded-for': ip,
+          'Proxy-Client-IP': ip,
+          'WL-Proxy-Client-IP': ip
+        }
+      })
+      await eval(res)
+      function handleResponse(data) {
+        if(!data.hasOwnProperty('data')) {
+          resolve({})
+          return
+        }
+        resolve(data.data.url)
+      }
+      /**
+       * 插画png：https://dl.588ku.com/down/pic?callback=handleResponse&type=7&picid=” ＋ 编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fchahua%2F&_=”
+       * 插画psd：https://dl.588ku.com/down/rar?callback=handleResponse&type=7&picid=” ＋ 编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fchahua%2F&_=”
+       * 元素png：https://dl.588ku.com/down/pic?callback=handleResponse&type=1&picid=” ＋ 编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fycpng%2F” ＋ 编号 ＋ “.html&video_senses=1&_=”
+       * 元素psd：https://dl.588ku.com/down/rar?callback=handleResponse&type=1&picid=” ＋ 编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fycpng%2F” ＋ 编号 ＋ “.html&video_senses=1&_=”
+       * GIF图片：https://dl.588ku.com/down/pic?callback=handleResponse&type=11&picid=” ＋ 编号 ＋ “&refererUrl=&_=”
+       * GIF动图：https://dl.588ku.com/down/rar?callback=handleResponse&type=11&picid=” ＋ 编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fgif%2F0-0-0-default-1%2F&_=”
+       * 背景jpg：https://dl.588ku.com/down/pic?callback=handleResponse&type=2&picid=” ＋ 素材 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fbeijing%2F0-0-default-0-8-0-0-0-0-1%2F&_=”
+       * 背景PSD：https://dl.588ku.com/down/rar?callback=handleResponse&type=2&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fbeijing%2F0-0-default-0-8-0-0-0-0-1%2F&_=” ＋ 时间_取现行时间戳 ()
+       * 摄影图： https://dl.588ku.com/down/pic?callback=handleResponse&type=10&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fsheyingtu%2F&_=” ＋ 时间_取现行时间戳 ()
+       * 文档：   https://dl.588ku.com/down/rar?callback=handleResponse&type=4&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fppt%2F&_=” ＋ 时间_取现行时间戳 ()
+       *         https://dl.588ku.com/down/rar?callback=handleResponse&type=4&picid=13253&refererUrl=&video_senses=1&_=1614221586607
+       * UI：     https://dl.588ku.com/down/rar?callback=handleResponse&type=9&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fui%2F&_= ” ＋ 时间_取现行时间戳 ()
+       * 音乐：   https://dl.588ku.com/down/rar?callback=handleResponse&type=8&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Faudio%2F&case_id=113&_=” ＋ 时间_取现行时间戳 ()
+       * 视频：   https://dl.588ku.com/down/rar?callback=handleResponse&type=5&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fvideo%2F&_=” ＋ 时间_取现行时间戳 ()
+       * 模板：   https://dl.588ku.com/down/rar?callback=handleResponse&type=3&picid=” ＋ 素材编号 ＋ “&refererUrl=https%3A%2F%2F588ku.com%2Fmoban%2F0-default-0-0-0-0-0-0-1%2F&_=” ＋ 时间_取现行时间戳 ()
+       */
+    }
+  })
 }
 // 包图
 async function baotu(reqData, cookie) {
@@ -97,7 +179,7 @@ async function baotu(reqData, cookie) {
           'WL-Proxy-Client-IP': ip
         }
       })
-      if(!res) resolve()
+      if(!res) resolve({})
       resolve(res)
     } catch (error) {
       reject(error)
@@ -208,7 +290,10 @@ async function nitu(ctx) {
           'X-Requested-With': 'XMLHttpRequest'
         }
       })
-      if(!res.data.url)  resolve('服务器错误')
+      if(!res.data.url)  {
+        resolve('服务器错误')
+        return
+      }
       // 将昵图分减去相应
       await DB.update("userInfo", {"_id":ObjectId(userId)},{ "webInfo.nitufen":userNitufen - nitufen})
       resolve(res.data.url)
@@ -244,7 +329,6 @@ async function sheji90(reqData, cookie) {
 async function liutu(reqData, cookie) {
   const { urlLink } = reqData
   const d = urlLink.match(/pic_(\S*).html/)[1]
-  console.log(d);
   return new Promise(async(resolve, reject) => {
     try {
       const res = await request({
@@ -276,6 +360,10 @@ async function xiongmao(reqData, cookie) {
         }
       })
       const downurl = JSON.parse(res.match(/{(\S*)}/)[0]).downurl
+      if(!downurl) {
+        resolve({})
+        return
+      }
       resolve(downurl)
     } catch (error) {
 
@@ -340,9 +428,8 @@ async function zhongtu(reqData, cookie) {
   })
 }
 // 第三方解析程序 ---搞定素材
-async function gaoding(reqData, cookie) {
-  const { urlLink, code = '' } = reqData
-  console.log(urlLink, code, cookie);
+async function gaoding(reqData, cookie, code = '') {
+  const { urlLink } = reqData
   return new Promise(async (resolve, reject)=>{
     try {
       const res = await request({
@@ -353,8 +440,11 @@ async function gaoding(reqData, cookie) {
           Cookie: cookie
         }
       })
-      console.log(res)
-      resolve(res.urlList)
+      if(!res.hasOwnProperty('urlList')) {
+        resolve({})
+        return
+      }
+      resolve(res.urlList['立即下载'])
     } catch (error) {
       reject(error)
     }

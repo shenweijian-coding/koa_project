@@ -51,6 +51,8 @@ module.exports = async (ctx, next) => {
         await associatedUserInfo(userID, accountObj)
         body = `账号：${accountObj.account}
 密码：${accountObj.pwd}
+登录网址：http://clumsybird.work(PC端打开)
+该账号与您微信已自动绑定,将链接发送至本窗口也可下载。
 tips:请先使用此账号密码登录,登录后可修改账号密码,方便您记忆~
 `
         }

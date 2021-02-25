@@ -21,6 +21,7 @@ async function validateMember(ctx, type, tag = 'web') {
       if (userInfo.length !== 1) {
         resolve("您还未注册账号,请发送“我要账号”至本公众号,登录网址 http://clumsybird.work")
       }
+      console.log('权限判断'+userId)
       // 获取网站类型
       // 查询解析用户的信息
       const { memberType, dueTime, videoTime, allDownNum } = userInfo[0].webInfo

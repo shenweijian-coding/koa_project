@@ -71,7 +71,6 @@ router.post('/matter', async (ctx) => {
         }
         return
     }
-    console.log('判断权限');
     const { sign, webName = null } = await validateMember(ctx)
     if (sign === 1002) { // 没有下载权限
         return ctx.body = { code: sign, msg: '您没有下载权限,赶紧去获取赞助版呐~' }
@@ -80,17 +79,19 @@ router.post('/matter', async (ctx) => {
     } else if (sign === 1004) {
         return ctx.body = { code: sign, msg: '您今日下载次数已用尽,赶紧去获取赞助版呐~' }
     }
-    console.log('调用解析');
+    console.log('开始解析素材');
     // 调用解析
     const res = await sort(ctx.request.body)
-    console.log(res);
+    console.log('下载地址'+ res);
     ctx.body = {
         code: 1005,
         url: res
     }
-    console.log('减次数');
     // 解析成功 相应次数  -1
-    await memberSubNum(ctx, webName)
+    if(res.toString().indexOf('//') !== -1){
+			console.log('开始减次数');
+      await memberSubNum(ctx, webName)
+    }
 })
 // 昵图下载
 router.post('/nitu', async (ctx) => {

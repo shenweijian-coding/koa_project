@@ -203,7 +203,7 @@ async function wxGongZhongDown(userId, urlLink){
       }
     } else if (urlLink.indexOf('588ku') !== -1) {
       urlType = 13
-      reqData = { urlLink,code: 2 }
+      reqData = { urlLink, a: 2 }
     } else if (urlLink.indexOf('616pic') !== -1) {
       urlType = 21
       reqData = { d:linkArrData[4].split('.')[0], a: 1 }
@@ -281,7 +281,7 @@ async function wxGongZhongDown(userId, urlLink){
     }
     resolve(url)
     memberSubNum(userId, webName, 'wx')
-    } catch (error) {
+  } catch (error) {
       reject(error)
     }
   })
