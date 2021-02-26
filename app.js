@@ -66,7 +66,7 @@ app.use(router.routes()).use(router.allowedMethods());
 // http.createServer(app.callback()).listen(3000)
 // https.createServer(httpsOption, app.callback()).listen(3001)
 // 启动
-app.listen(80, ()=>{
+app.listen(3000, ()=>{
   console.log('服务已经启动')
 });
 

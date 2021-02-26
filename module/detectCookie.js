@@ -188,9 +188,50 @@ async function  testSheji90 () {
   })
 }
 
+// 检测视达网
+async function testShida () {
+  return new Promise(async(resolve,reject)=>{
+    const result = await DB.find('cookie', { name: 'shida' })
+    const cookies = result[0].cookie
+    for (let i = 0; i < cookies.length; i++) {
+      const source = await request({
+        url: 'https://shida66.com/info.html',
+        headers: {
+          Cookie:cookies[i]
+        }
+     })
+     if (source.indexOf('左下角的我') === -1) {
+       // 说明掉线了  需要邮箱通知  并删除该cookie
+       // await DB.remove('cookie',{}) // 删除cookie
+       sendMail('1834638245@qq.com','','视达网'+i,'','')
+     }
+    }
+  })
+}
+// 昵图网掉线
+async function testNitu(){
+  return new Promise(async(resolve,reject)=>{
+    const result = await DB.find('cookie', { name: 'nitu' })
+    const cookies = result[0].cookie
+    for (let i = 0; i < cookies.length; i++) {
+      const source = await request({
+        url: 'http://user.nipic.com/transaction/index?type=8',
+        headers: {
+          Cookie:cookies[i]
+        }
+     })
+     if (source.indexOf('交易记录') === -1) {
+       // 说明掉线了  需要邮箱通知  并删除该cookie
+       // await DB.remove('cookie',{}) // 删除cookie
+       sendMail('1834638245@qq.com','','昵图网'+i,'','')
+     }
+    }
+  })
+}
+// async function test
 function scheduleRecurrenceRule(){
   const rule = new schedule.RecurrenceRule()
-     // rule.minute = 0;
+    rule.minute = 0;
     rule.second = 0;
     schedule.scheduleJob(rule, function(){
       console.log('开始检测');
@@ -203,6 +244,8 @@ function scheduleRecurrenceRule(){
       testMiyuansu()
       testBaotu()
       testMizhi()
+      testShida()
+      testNitu()
    });
 }
 scheduleRecurrenceRule()

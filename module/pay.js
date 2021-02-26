@@ -1,5 +1,6 @@
 const DB = require('../db/db')
-const dayjs = require('dayjs');
+const dayjs = require('dayjs')
+const { sendMail } = require('./common')
 const { ObjectId } = require('mongodb');
 async function pay(ctx) {
   return new Promise(async (resolve, reject)=>{
@@ -12,6 +13,7 @@ async function pay(ctx) {
        * price 价格
        */
     const { pay_id, pay_no, pay_time, price } = ctx.request.body
+    console.log('赞助', pay_id, price);
     await DB.insert('payData', { pay_id, pay_no, pay_time, price })
     const userInfo = await DB.find('userInfo', {'_id': ObjectId(pay_id)})
     // 根据付的钱对应权限
@@ -74,6 +76,10 @@ async function pay(ctx) {
       await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.videoTime':videoTime})
     } else if (price === '1.00' || price === '1') { // 仅下载1次
       await DB.update('userInfo', {'_id':ObjectId(pay_id)},{ 'webInfo.allDownNum': 1 })
+    }
+    // 获取email
+    if(userInfo[0].hasOwnProperty('email')){
+      sendMail(userInfo[0].email,'','赞助成功','金额'+price,'谢谢您的赞助，有问题随时联系QQ1834638245')
     }
     // 根据openId获取用户数据
     resolve({})

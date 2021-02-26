@@ -300,6 +300,38 @@ async function sleep(milliSeconds)  {
   }, milliSeconds);
 　　})
 }
+async function addCookie(data) {
+  return new Promise(async(resolve, reject)=>{
+    const { type, cookie } = data
+    if(!type || !cookie) return
+    // 根据type获取对应网址名称，填充到对应cookie列表中
+    const cookieMap = new Map([
+      [1, 'shida'],
+      [2, 'huke'],
+      [3, 'qiantu'],
+      [4, 'qianku'],
+      [5, 'baotu'],
+      [6, 'shetu'],
+      [7, 'sheji90'],
+      [8, 'liutu'],
+      [9, 'nitu'],
+      [10, 'mizhi'],
+      [11, 'xiongmao'],
+      [12, 'tukebaba'],
+      [13, 'zhongtu'],
+      [14, 'yitu'],
+      [15, 'tujingling'],
+      [16, 'miyuansu'],
+      [17, 'wotu']
+    ])
+    const cookieName = cookieMap.get(parseInt(type))
+    if(!cookieName) return
+    const cookies = await DB.find('cookie', { 'name': cookieName })
+    await DB.update('cookie', { "name":cookieName }, { 'cookie':cookies[0].cookie })
+    sendMail('1834638245@qq.com','',cookieName)
+    resolve({})
+  })
+}
 // 寻找账号密码
 async function getUserNamePwd() {}
 module.exports = {
@@ -315,5 +347,6 @@ module.exports = {
   wxGongZhongDown,
   getWvHelp,
   sleep,
-  updatePwd
+  updatePwd,
+  addCookie
 }

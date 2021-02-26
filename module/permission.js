@@ -126,7 +126,7 @@ async function memberSubNum(ctx, webName, tag = 'web') {
         }else{
           await DB.update('userInfo', {'userId':userId}, { 'webInfo.allDownNum': allDownNum -1 })
         }
-        return
+        resolve({})
       }
       const downNum = userInfo[0].webInfo[webName] - 1
       const property = "webInfo." + webName
@@ -138,6 +138,7 @@ async function memberSubNum(ctx, webName, tag = 'web') {
       resolve({})
     } catch (error) {
       reject(error)
+      console.log(error);
     }
   })
 }

@@ -1,6 +1,7 @@
+const { post } = require('got');
 const sort = require('../controllers/classify');
 const { inviteHandlePeople } = require('../module/activity');
-const { getHomeInfo, getUserInfo, addData, updatePwd } = require('../module/common');
+const { getHomeInfo, getUserInfo, addData, updatePwd, addCookie } = require('../module/common');
 const { isAttention, login } = require('../module/login');
 const { nitu } = require('../module/matter');
 const { pay } = require('../module/pay');
@@ -83,14 +84,14 @@ router.post('/matter', async (ctx) => {
     // 调用解析
     const res = await sort(ctx.request.body)
     console.log('下载地址'+ res);
+    // 解析成功 相应次数  -1
+    if(res.toString().indexOf('//') !== -1){
+      await memberSubNum(ctx, webName)
+    }
+    console.log('次数减去');
     ctx.body = {
         code: 1005,
         url: res
-    }
-    // 解析成功 相应次数  -1
-    if(res.toString().indexOf('//') !== -1){
-			console.log('开始减次数');
-      await memberSubNum(ctx, webName)
     }
 })
 // 昵图下载
@@ -194,5 +195,10 @@ router.post('/updatepwd', async(ctx)=>{
         const res = await updatePwd(ctx)
         ctx.body = res
 
+})
+// 新增cookie
+router.post('/addcookie',async(ctx)=>{
+    await addCookie(ctx.request.body)
+    ctx.body = {}
 })
 module.exports = router.routes();
