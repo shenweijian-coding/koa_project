@@ -51,6 +51,7 @@ async function tukebaba(reqData, cookie) {
 async function mizhi(reqData, cookie) {
   const { d, a } = reqData // 获取素材id
   const url = `https://download.51miz.com/?m=download&a=download&id=${d}&plate_id=${a.a}&format=${a.f}`
+  console.log(url);
   return new Promise(async (resolve, reject) => {
     try {
       const res = await request({
@@ -419,6 +420,7 @@ async function zhongtu(reqData, cookie) {
         },
         data: 'id='+d
       })
+      console.log(res);
       if(!res.data) resolve({})
       const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://clumsybird.work:3001')
       resolve(downUrl)
@@ -440,6 +442,7 @@ async function gaoding(reqData, cookie, code = '') {
           Cookie: cookie
         }
       })
+      console.log(res);
       if(!res.hasOwnProperty('urlList')) {
         resolve({})
         return

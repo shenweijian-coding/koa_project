@@ -238,6 +238,7 @@ async function wxGongZhongDown(userId, urlLink){
         reqData.a = { a: 17, f: 'source' }
       } else if (linkArrData[3] === 'ppt') {
         reqData.a = { a: 9, f: '' }
+        reqData.d = linkArrData[5].split('.')[0]
       } else if (linkArrData[3] === 'muban') {
         reqData.a = { a: 18, f: '' }
       } else if (linkArrData[3] === 'tupian') {
@@ -245,12 +246,16 @@ async function wxGongZhongDown(userId, urlLink){
       } else if (linkArrData[3] === 'fonts') {
       } else if (linkArrData[3] === 'shipin') {
         reqData.a = { a: 5, f: 2 }
+        reqData.d = linkArrData[5].split('.')[0]
       } else if (linkArrData[3] === 'wendang') {
         reqData.a = { a: 10, f: '' }
+        reqData.d = linkArrData[5].split('.')[0]
       } else if (linkArrData[3] === 'shouchaobao') {
         reqData.a = { a: 8, f: '' }
+        reqData.d = linkArrData[5].split('.')[0]
       } else if (linkArrData[3] === 'biaoge') {
         reqData.a = { a: 11, f: '' }
+        reqData.d = linkArrData[5].split('.')[0]
       } else if (linkArrData[3] === 'sound') {
         reqData.a = { a: 21, f: 1 }
       } else if (linkArrData[3] === 'dianshang') {

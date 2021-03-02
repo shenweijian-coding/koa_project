@@ -10,7 +10,7 @@ async function updateNumInfo() {
   for (let i = 0; i < userInfoList.length; i++) {
     // 判断是不是会员
     const { _id } = userInfoList[i]
-    const { dueTime, videoTime, nitufen } = userInfoList[i].webInfo
+    const { dueTime, videoTime, nitufen,allDownNum } = userInfoList[i].webInfo
     if(dueTime > dayjs().format('YYYY-MM-DD')) { // 是素材会员
       newNumData = {
         "memberType": 1,
@@ -21,7 +21,7 @@ async function updateNumInfo() {
         "liutuNum": 20,
         "baotuNum": 10,
         "sheji90Num": 20,
-        "allDownNum": 0,
+        "allDownNum": allDownNum,
         "xiongmaoNum": 10,
         "qiankuNum": 10,
         "shetuNum": 10,
@@ -40,7 +40,7 @@ async function updateNumInfo() {
         "dueTime": dueTime,
         "videoTime": videoTime,
         "nitufen": nitufen,
-        "allDownNum": 0,
+        "allDownNum": allDownNum,
         "qiantuNum": 10,
         "liutuNum": 20,
         "baotuNum": 10,
@@ -63,7 +63,7 @@ async function updateNumInfo() {
         "dueTime": '2021-01-01',
         "videoTime": '2021-01-01',
         "nitufen": nitufen,
-        "allDownNum":0,
+        "allDownNum":allDownNum,
         "qiantuNum": 0,
         "liutuNum": 5,
         "baotuNum": 0,

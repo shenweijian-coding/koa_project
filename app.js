@@ -7,7 +7,7 @@ const XMLParser = require('./middlewares/XMLParser')
 const bodyParser= require('koa-bodyparser')
 // const sslify = require('koa-sslify').default;
 const path = require('path')
-const compress = require('koa-compress');
+const compress = require('koa-compress')
 //引入子模块
 const admin=require('./routes/admin.js')
 const api=require('./routes/api.js')
@@ -33,11 +33,7 @@ const httpsOption = {
 // xml转换json
 app.use(XMLParser)
 app.use(bodyParser());      // 将模块作为koa的中间件引入
-app.use(static(path.resolve(__dirname + '/statics')),{
-  setHeaders:(res, path, stats)=>{
-    res.setHeaders({'Cache-Control':'max-age=60' })
-  }
-})
+app.use(static(path.resolve(__dirname + '/statics')),{ maxage:100000 })
 // app.use(sslify)
 /*
   /admin   配置子路由  层级路由

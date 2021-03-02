@@ -69,13 +69,17 @@ async function pay(ctx) {
       const nitufen = userInfo[0].webInfo.nitufen + 1000
       await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.nitufen': nitufen})
     } else if (price === '10.00' || price === '10') { // 5000昵图分
-      const nitufen = userInfo[0].webInfo.nitufen + 10000
+      const nitufen = userInfo[0].webInfo.nitufen + 5000
       await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.nitufen': nitufen})
     } else if (price === '30.00' || price === '30') { // 虎课
       const videoTime =dayjs().add(1, 'year').format('YYYY-MM-DD')
       await DB.update('userInfo', {'_id': ObjectId(pay_id)}, {'webInfo.videoTime':videoTime})
     } else if (price === '1.00' || price === '1') { // 仅下载1次
       await DB.update('userInfo', {'_id':ObjectId(pay_id)},{ 'webInfo.allDownNum': 1 })
+    } else if (price === '3.00' || price === '3') { // 10次下载
+      await DB.update('userInfo', {'_id':ObjectId(pay_id)},{ 'webInfo.allDownNum': 10 })
+    } else if (price === '11.00' || price === '11') { // 50次下载
+      await DB.update('userInfo', {'_id':ObjectId(pay_id)},{ 'webInfo.allDownNum': 50 })
     }
     // 获取email
     if(userInfo[0].hasOwnProperty('email')){

@@ -87,8 +87,8 @@ router.post('/matter', async (ctx) => {
     // 解析成功 相应次数  -1
     if(res.toString().indexOf('//') !== -1){
       await memberSubNum(ctx, webName)
+      console.log('次数减去');
     }
-    console.log('次数减去');
     ctx.body = {
         code: 1005,
         url: res
