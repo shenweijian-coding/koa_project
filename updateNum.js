@@ -11,7 +11,7 @@ async function updateNumInfo() {
     // 判断是不是会员
     const { _id } = userInfoList[i]
     const { dueTime, videoTime, nitufen,allDownNum } = userInfoList[i].webInfo
-    if(dueTime > dayjs().format('YYYY-MM-DD')) { // 是素材会员
+    if(dueTime > dayjs().format('YYYY-MM-DD') && videoTime < dayjs().format('YYYY-MM-DD')) { // 是素材会员
       newNumData = {
         "memberType": 1,
         "dueTime": dueTime,
@@ -57,7 +57,30 @@ async function updateNumInfo() {
         "tujinglingNum": 10,
         "zhongtuNum": 5
     }
-    } else { // 免费版本
+    }else if(dueTime < dayjs().format('YYYY-MM-DD') && videoTime > dayjs().format('YYYY-MM-DD')){ // 视频会员
+      newNumData = {
+        "memberType": 1,
+        "dueTime": dueTime,
+        "videoTime": videoTime,
+        "nitufen": nitufen,
+        "allDownNum": allDownNum,
+        "qiantuNum": 0,
+        "liutuNum": 3,
+        "baotuNum": 0,
+        "sheji90Num": 0,
+        "xiongmaoNum": 0,
+        "qiankuNum": 0,
+        "shetuNum": 0,
+        "tukeNum": 3,
+        "miyuansuNum": 0,
+        "wotuNum": 3,
+        "shidaNum": 30,
+        "hukeNum": 30,
+        "mizhiNum": 0,
+        "tujinglingNum": 3,
+        "zhongtuNum": 0
+      }
+    }else { // 免费版本
       newNumData = {
         "memberType": 0,
         "dueTime": '2021-01-01',
@@ -65,19 +88,19 @@ async function updateNumInfo() {
         "nitufen": nitufen,
         "allDownNum":allDownNum,
         "qiantuNum": 0,
-        "liutuNum": 5,
+        "liutuNum": 3,
         "baotuNum": 0,
         "sheji90Num": 0,
         "xiongmaoNum": 0,
         "qiankuNum": 0,
         "shetuNum": 0,
-        "tukeNum": 10,
-        "miyuansuNum": 5,
-        "wotuNum": 5,
-        "shidaNum": 10,
+        "tukeNum": 3,
+        "miyuansuNum": 3,
+        "wotuNum": 3,
+        "shidaNum": 5,
         "hukeNum": 0,
-        "mizhiNum": 10,
-        "tujinglingNum": 5,
+        "mizhiNum": 0,
+        "tujinglingNum": 3,
         "zhongtuNum": 0
     }
     }
