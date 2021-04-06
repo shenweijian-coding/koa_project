@@ -80,6 +80,7 @@ async function qianku(reqData, cookie) {
   return new Promise(async(resolve,reject)=>{
     // 先获取下载配置
     const { urlLink, a } = reqData
+    console.log(urlLink,a)
     const tag = urlLink.split('/')[3] // 素材类型标识
     const d = urlLink.split('/')[4].split('.')[0] // 素材id
     if(!a) { // 第一次解析  查找下载配置选项
@@ -101,7 +102,7 @@ async function qianku(reqData, cookie) {
       }
       const downType = a === 1 ? 'pic' : 'rar'
       const time = new Date().getTime()
-      const ip = '183.199.244.80'
+      const ip = '183.197.69.149'
       let url = ''
       if(tag === 'office') {
         url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=4&picid=${d}&refererUrl=&video_senses=1&_=${time}`
@@ -112,7 +113,8 @@ async function qianku(reqData, cookie) {
       }else if(tag === 'ycaudio'){
         url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=8&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Faudio%2F0-0-0-0-0-0-default-1%2F&video_senses=1&_=${time}`
       }else if(tag === 'video') {
-        url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=5&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fvideo%2F1-0-0-0-pr-0-0%2F&video_senses=1&_=${time}`
+               https://dl.588ku.com/down/rar?callback=handleResponse&type=5&picid=27040762&refererUrl=https%3A%2F%2F588ku.com%2Fvideo%2F&video_senses=1&_=1616142573976
+        url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=5&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fvideo%2F&video_senses=1&_=${time}`
       }else if(tag === 'moban') {
         url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=3&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fmoban%2F0-default-0-0-0-0-0-0-1%2F&video_senses=1&_=${time}`
       }else if(tag === 'ycwordart') {
@@ -135,6 +137,7 @@ async function qianku(reqData, cookie) {
           'WL-Proxy-Client-IP': ip
         }
       })
+      console.log(res)
       await eval(res)
       function handleResponse(data) {
         if(!data.hasOwnProperty('data')) {
@@ -169,7 +172,7 @@ async function baotu(reqData, cookie) {
   const url = `https://ibaotu.com/?m=downloadopen&a=open&id=${d}&down_type=1&&attachment_id=`
   return new Promise(async (resolve, reject) => {
     try {
-      const ip = '183.199.244.80'
+      const ip = '183.197.69.149'
       const res = await request({
         url: url,
         maxRedirects: 0,
@@ -207,7 +210,7 @@ async function shetu(reqData, cookie) {
       repData = 4
     } else if (type.includes('ppt')) {// ppt
       repData = 5
-    } else if (type.includes('vector')) {// 设计模板
+    } else if (type.includes('vector') || type.includes('muban')) {// 设计模板
       repData = 6
     } else if (type.includes('yuansu')) { // 免扣元素
       repData = 7
@@ -224,13 +227,20 @@ async function shetu(reqData, cookie) {
   let reqShetuData = ''
   if (urlLink.includes('video')) {
     reqShetuData = `fileType=${f}&page_num=1&download_from=186&video_rate=2`
+    let d = urlLink.match(/id=(\S*)/)[1]
+    await request({ 
+      url: `https://699pic.com/download/allowDownloadVideo?id=${d}&fileType=${f}`,
+      headers:{
+        Cookie:cookie
+      }
+    })
   } else if (urlLink.includes('music')) {
     reqShetuData = `music_id=${p}&type=1&sid=0&page=0`
   } else {
     reqShetuData = `pid=${p}&byso=0&bycat=${t}&filetype=${f}`
   }
   // 根据type的参数 拼接对应的url
-  let url = `https://699pic.com/${urlLink}`
+  let url = `https://699pic.com/${urlLink}` // download/video?id=170241
   return new Promise(async (resolve, reject) => {
     try {
       const res = await request({

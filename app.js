@@ -26,6 +26,7 @@ const httpsOption = {
   key: fs.readFileSync('./config/2_clumsybird.work.key'),
   cert: fs.readFileSync('./config/1_clumsybird.work.pem'),
 } 
+
 // app.use(cors({
 //    origin: 'http://localhost:8080',
 //    credentials: true
@@ -34,6 +35,11 @@ const httpsOption = {
 app.use(XMLParser)
 app.use(bodyParser());      // 将模块作为koa的中间件引入
 app.use(static(path.resolve(__dirname + '/statics')),{ maxage:100000 })
+// app.use((ctx,next)=>{
+//   ctx.response.set("Expires",new Date('2050-12-12').toGMTString())
+//   ctx.response.set("Cache-Control",'max-age=31536000;public')
+//   next()
+// })
 // app.use(sslify)
 /*
   /admin   配置子路由  层级路由

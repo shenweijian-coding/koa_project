@@ -124,7 +124,7 @@ async function fileDownHuke(reqData) {
     const res = await request({
       url:'https://huke88.com/download/ajax-download-source-case',
       method:'POST',
-      data: `id=66688&type=${type}&studySourceId=1&confirm=0&_csrf-frontend=${sign}`,
+      data: `id=${d}&type=${type}&studySourceId=1&confirm=0&_csrf-frontend=${sign}`,
       headers: {
         Cookie: Cookie
       }

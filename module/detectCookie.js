@@ -7,6 +7,7 @@ async function  testShetu () {
   return new Promise(async(resolve, reject)=>{
     try {
     const result = await DB.find('cookie', { name: 'shetu' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -17,6 +18,7 @@ async function  testShetu () {
      })
      if (source.indexOf('我的授权') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'shetu' },{ cookie:cookies[i] })
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','摄图'+i,'','掉线了')
      }
@@ -30,6 +32,7 @@ async function  testShetu () {
 async function  testBaotu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'baotu' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -40,6 +43,7 @@ async function  testBaotu () {
      })
      if (source.indexOf('请登录') !== -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'baotu' },{ cookie:cookies[i] })
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','包图'+i,'','')
      }
@@ -50,6 +54,7 @@ async function  testBaotu () {
 async function  testMizhi () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'mizhi' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -60,6 +65,7 @@ async function  testMizhi () {
      })
      if (source.indexOf('登录') !== -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'mizhi' },{ cookie:cookies[i] })
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','觅知'+i,'','')
      }
@@ -70,6 +76,7 @@ async function  testMizhi () {
 async function  testMiyuansu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'miyuansu' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -80,6 +87,8 @@ async function  testMiyuansu () {
      })
      if (source.indexOf('登录') !== -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'miyuansu' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','觅元素'+i,'','')
      }
@@ -90,8 +99,8 @@ async function  testMiyuansu () {
 async function  testXiongmao () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'xiongmao' })
+    if(!result.length) return
     const cookies = result[0].cookie
-    console.log(cookies);
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
         url: 'https://www.tukuppt.com/index/usercenter/info',
@@ -101,6 +110,8 @@ async function  testXiongmao () {
      })
      if (source.indexOf('用户中心') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'xiongmao' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','熊猫办公'+i,'','')
      }
@@ -111,6 +122,7 @@ async function  testXiongmao () {
 async function  testTuke () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tukebaba' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -121,6 +133,8 @@ async function  testTuke () {
      })
      if (source.indexOf('用户中心') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'tukebaba' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','图克巴巴'+i,'','')
      }
@@ -131,6 +145,7 @@ async function  testTuke () {
 async function  testTujingling () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'tujingling' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -141,6 +156,8 @@ async function  testTujingling () {
      })
      if (source.indexOf('用户收藏') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'tujingling' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','图精灵'+i,'','')
      }
@@ -151,6 +168,7 @@ async function  testTujingling () {
 async function  testZhongtu () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'zhongtu' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -161,6 +179,8 @@ async function  testZhongtu () {
      })
      if (source.indexOf('您还未登录') !== -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'zhongtu' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','众图'+i,'','')
      }
@@ -171,6 +191,7 @@ async function  testZhongtu () {
 async function  testSheji90 () {
   return new Promise(async(resolve, reject)=>{
     const result = await DB.find('cookie', { name: 'sheji90' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -181,6 +202,8 @@ async function  testSheji90 () {
      })
      if (source.indexOf('18832373807') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'sheji90' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','90设计'+i,'','')
      }
@@ -192,6 +215,7 @@ async function  testSheji90 () {
 async function testShida () {
   return new Promise(async(resolve,reject)=>{
     const result = await DB.find('cookie', { name: 'shida' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -202,6 +226,7 @@ async function testShida () {
      })
      if (source.indexOf('左下角的我') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'shida' },{ cookie:cookies[i] })
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','视达网'+i,'','')
      }
@@ -212,6 +237,7 @@ async function testShida () {
 async function testNitu(){
   return new Promise(async(resolve,reject)=>{
     const result = await DB.find('cookie', { name: 'nitu' })
+    if(!result.length) return
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
@@ -222,6 +248,8 @@ async function testNitu(){
      })
      if (source.indexOf('交易记录') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
+       DB.updateMany('cookie',{ name:'nitu' },{ cookie:cookies[i] })
+
        // await DB.remove('cookie',{}) // 删除cookie
        sendMail('1834638245@qq.com','','昵图网'+i,'','')
      }

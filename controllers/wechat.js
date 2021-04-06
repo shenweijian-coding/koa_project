@@ -173,7 +173,7 @@ async function subscribe (message) {
     // 如果要记录用户信息，需要从我们自己的用户记录里获取该信息。
     // 所以建议创建用户时除了unionid，最好把openid也保存起来。
     // console.log(userID + '取关了')
-    DB.update('userInfo',{ 'userId':userID },{ 'isAttention':false }, { multi:1 })
+    DB.remove('userInfo',{ 'userId':userID })
     // 后期会发送邮件
   }
 }

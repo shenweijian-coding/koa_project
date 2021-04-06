@@ -19,7 +19,7 @@ router.post('/login',async (ctx) => {
             msg: msg
         }
     } catch (error) {
-        reject(error)
+        console.log(error)
     }
 })
 // 获取用户信息

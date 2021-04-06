@@ -1,7 +1,7 @@
 const axios = require('axios')
 const request = require('./utils/request')
 const dayjs = require('dayjs')
-// const DB = require('./db/db')
+const DB = require('./db/db')
 // const { redis } = require('./utils/dbHelper')
 // axios.get('https://download.51miz.com/?m=download&a=download&id=1154782&plate_id=17&format=image',{maxRedirects: 0
 // }).then(res=>{
@@ -87,19 +87,9 @@ const dayjs = require('dayjs')
 // eval(`${tag}()`)
 // console.log(await redis.get('test'));
 
-
+const { sendMail } = require('./module/common')
 function test() {
-  eval('handleResponse({"code":200,"msg":"请求成功","data":{"status":0,"msg":"可以下载","type":13,"isvip":1,"id":10457069,"keyword":null,"url":"https:\/\/down-qn.588ku.com\/element_origin_pic\/19\/05\/24\/aea6c2f5316481025a339caf3d59d8b6.png?_upd=true\u0026sign=c32dcf719c9bf0a56ce6d5587ae84dc8\u0026t=60376dd4\u0026n=千库网_篮球培训班火热招生中_艺术字编号10457069.png","photo_right_warn":0}})')
-  const handleResponse = (data) => {
-    return data.data.url
-  }
-  console.log('haha');
-  console.log();
-  const res = {
-    a:1
-  }
-  if(res?.a){
-    console.log(res.a);
-  }
+  //DB.updateMany('cookie',{ name:'shida' },{ cookie:"100" })
+  sendMail('1834638245@qq.com','','摄图','','掉线了')
 }
 test()

@@ -313,7 +313,6 @@ async function addCookie(data) {
     const cookieMap = new Map([
       [1, 'shida'],
       [2, 'huke'],
-      [3, 'qiantu'],
       [4, 'qianku'],
       [5, 'baotu'],
       [6, 'shetu'],
@@ -331,8 +330,8 @@ async function addCookie(data) {
     ])
     const cookieName = cookieMap.get(parseInt(type))
     if(!cookieName) return
-    const cookies = await DB.find('cookie', { 'name': cookieName })
-    await DB.update('cookie', { "name":cookieName }, { 'cookie':cookies[0].cookie })
+    //const cookies = await DB.find('cookie', { 'name': cookieName })
+    await DB.addto('cookie', { "name":cookieName }, { 'cookie':cookie })
     sendMail('1834638245@qq.com','',cookieName)
     resolve({})
   })
