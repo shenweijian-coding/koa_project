@@ -36,7 +36,7 @@ module.exports = async (ctx, next) => {
     // 如果是文本消息
     if(msgType === 'text') {
       // 我要账号 
-      if(/我要账号/.test(message.Content)){
+      if(/账号/.test(message.Content)){
         // 查找用户信息  有则提示已经有了   没有则发送账号密码
         const userInfo = await findUserInfo(userID)
         // console.log(userInfo);
@@ -60,6 +60,8 @@ tips:请先使用此账号密码登录,登录后可修改账号密码,方便您�
         const url = await wxGongZhongDown(userID, message.Content)
         if(!url) {
           body = '服务器错误，请联系管理员~'
+        }else if(url.includes('账号')){
+          body = url
         }else{
           body = `请点击下方连接
 
@@ -70,7 +72,7 @@ ${url}
       }else if(/帮助/.test(message.Content)){
           body = await getWvHelp()
       }else {
-        body = '无法识别您的信息'
+        body = '暂不支持智能回复，请点击右下角联系公众号运营管理员，谢谢支持！'
       }
     } else if (msgType === 'event') {
       switch (msgEvent) {

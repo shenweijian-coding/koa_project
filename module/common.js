@@ -273,7 +273,10 @@ async function wxGongZhongDown(userId, urlLink){
     }
     // 有了网站了 开始校验权限
     const { sign, webName = null } = await validateMember(userId, urlType, 'wx')
-    if (sign !== 1005) { // 没有下载权限
+    if(sign === -1){
+      resolve('您还未注册账号,请发送“我要账号”至本窗口,登录网址 http://clumsybird.work"')
+      return
+    } else if (sign !== 1005) { // 没有下载权限
       resolve('您账号不满足下载条件,请前往网页版查看 http://clumsybird.work')
       return
     }

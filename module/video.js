@@ -76,6 +76,7 @@ async function huke(reqData) {
         data: `id=${hukeId}&_csrf-frontend=${_csrfFrontend}`
         // data: 'id=67251&_csrf-frontend=HtUJbRqTYfV7LorYYVyuPLhPctnqT8ODZhT5tXQYWThPr0ccKukgkExvuI8CC8d1jgFClJs49NQtLc7NQH86Uw%3D%3D'
       })
+      console.log(_csrfFrontend)
       res.data.sign = _csrfFrontend
       res.data.d = hukeId
       // res.data.isShowDown = isShowDown

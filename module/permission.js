@@ -19,7 +19,7 @@ async function validateMember(ctx, type, tag = 'web') {
         userInfo = await DB.find('userInfo', { 'userId': userId })
       }
       if (userInfo.length !== 1) {
-        resolve("您还未注册账号,请发送“我要账号”至本公众号,登录网址 http://clumsybird.work")
+        resolve({ sign:-1 })
       }
       console.log('权限判断'+userId)
       // 获取网站类型
