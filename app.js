@@ -27,10 +27,10 @@ const httpsOption = {
   cert: fs.readFileSync('./config/1_clumsybird.work.pem'),
 } 
 
-// app.use(cors({
-//    origin: 'http://localhost:8080',
-//    credentials: true
-//  }));
+app.use(cors({
+   origin: 'http://localhost:8080',
+   credentials: true
+ }));
 // xml转换json
 app.use(XMLParser)
 app.use(bodyParser());      // 将模块作为koa的中间件引入

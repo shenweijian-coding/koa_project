@@ -195,12 +195,12 @@ async function  testSheji90 () {
     const cookies = result[0].cookie
     for (let i = 0; i < cookies.length; i++) {
       const source = await request({
-        url: 'http://90sheji.com/u/2774472/?a=selfEdit',
+        url: 'http://90sheji.com/',
         headers: {
           Cookie:cookies[i]
         }
      })
-     if (source.indexOf('18832373807') === -1) {
+     if (source.indexOf('上传赚钱') === -1) {
        // 说明掉线了  需要邮箱通知  并删除该cookie
        DB.updateMany('cookie',{ name:'sheji90' },{ cookie:cookies[i] })
 
@@ -276,4 +276,18 @@ function scheduleRecurrenceRule(){
       testNitu()
    });
 }
-scheduleRecurrenceRule()
+scheduleRecurrenceRule();
+(()=>{
+  console.log('开始检测');
+  // testShetu()
+  testSheji90()
+  // testZhongtu()
+  // testTujingling()
+  // testTuke()
+  // testXiongmao()
+  // testMiyuansu()
+  // testBaotu()
+  // testMizhi()
+  // testShida()
+  testNitu()
+})()

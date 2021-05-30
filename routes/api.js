@@ -45,11 +45,11 @@ router.post('/play', async (ctx) => {
     // 验证权限 video视频 播放权限
     const { sign, webName = null } = await validateMember(ctx, 1)
     if (sign === 1002) { // 没有下载权限
-        return ctx.body = { code: sign, msg: '您没有观看权限,赶紧去获取赞助版呐~' }
+        return ctx.body = { code: sign, msg: '未赞助，请点击【赞助充值】' }
     } else if (sign === 1003) {
-        return ctx.body = { code: sign, msg: '您的会员已过期,快去赞助吧' }
+        return ctx.body = { code: sign, msg: '赞助到期，请点击【赞助充值】' }
     } else if (sign === 1004) {
-        return ctx.body = { code: sign, msg: '您今日观看次数已用尽,赶紧去获取赞助版呐~' }
+        return ctx.body = { code: sign, msg: '今日次数已用尽，请充值或明日再来~' }
     }
     // 调用
     const res = await sort(ctx.request.body)
@@ -74,11 +74,11 @@ router.post('/matter', async (ctx) => {
     }
     const { sign, webName = null } = await validateMember(ctx)
     if (sign === 1002) { // 没有下载权限
-        return ctx.body = { code: sign, msg: '您没有下载权限,赶紧去获取赞助版呐~' }
+        return ctx.body = { code: sign, msg: '未赞助，请点击【赞助充值】' }
     } else if (sign === 1003) {
-        return ctx.body = { code: sign, msg: '您的会员已过期,赶紧去获取赞助呐~' }
+        return ctx.body = { code: sign, msg: '赞助到期，请点击【赞助充值】' }
     } else if (sign === 1004) {
-        return ctx.body = { code: sign, msg: '您今日下载次数已用尽,赶紧去获取赞助版呐~' }
+        return ctx.body = { code: sign, msg: '今日次数已用尽，请充值或明日再来~' }
     }
     console.log('开始解析素材');
     // 调用解析

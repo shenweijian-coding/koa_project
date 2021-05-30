@@ -26,8 +26,8 @@ async function validateMember(ctx, type, tag = 'web') {
       // 查询解析用户的信息
       const { memberType, dueTime, videoTime, allDownNum } = userInfo[0].webInfo
       // 网站类型
-      const freeWebList = [9, 10, 18, 20, 21, 22, 23] // 免费网站
-      const tollWebList = [8, 11, 12, 13, 14, 15, 17, 19, 24, 25] // 收费网站
+      const freeWebList = [9, 10, 20, 21, 22, 23] // 免费网站
+      const tollWebList = [8, 11, 12, 13, 14, 15, 17, 18, 19, 24, 25] // 收费网站
       const totalWeb = new Map([
         [8,'hukeNum'],
         [9,'shidaNum'],

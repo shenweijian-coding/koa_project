@@ -1,13 +1,13 @@
 
 // 数据库
 const app = {
-  // dbUrl: 'mongodb://127.0.0.1:27017',
+  //dbUrl: 'mongodb://127.0.0.1:27017',
   dbUrl: 'mongodb://nodejs:swj250176@1.15.123.213:27017',
   dbName:'dbSuCai'
 }
 // cookie
 const cookieConfig = {
-  maxAge:172800000,            // 一个数字表示从 Date.now() 得到的毫秒数
+  maxAge:272800000,            // 一个数字表示从 Date.now() 得到的毫秒数
   // expires: new Date() + 1000 * 60,        // 过期的 Date,如不设置就和session类似，关闭浏览器此cookie失效
   path: '/',                  // 路径, 默认是'/'
   domain: '',                // 域名

@@ -6,7 +6,7 @@ const Wechat = require('../utils/wechat/wxmp')
 const MPConfig = require('../utils/wechat/helper').MP
 const qr = require('../vendor/qr')
 const DB = require('../db/db');
-const { addUserInfo,findUserInfo,addData,generateAccountPassword, associatedUserInfo, wxGongZhongDown, getWvHelp } = require('../module/common');
+const { addUserInfo, findUserInfo, addData, generateAccountPassword, associatedUserInfo, wxGongZhongDown, getWvHelp, getUserNamePwd } = require('../module/common');
 const { ObjectId } = require('mongodb');
 
 const MP = new Wechat(MPConfig)
@@ -34,44 +34,60 @@ module.exports = async (ctx, next) => {
     const userID = message.FromUserName
     let body = null
     // 如果是文本消息
-    if(msgType === 'text') {
+    if (msgType === 'text') {
       // 我要账号 
-      if(/账号/.test(message.Content)){
+      if (/账号/.test(message.Content)) {
         // 查找用户信息  有则提示已经有了   没有则发送账号密码
         const userInfo = await findUserInfo(userID)
         // console.log(userInfo);
-        if(!userInfo) {
-          body = '账号只能获取1次,您之前已经获取过了,若忘记账号密码,可使用邮箱找回您的账号密码' 
-        }else{
-        // 没有账号  添加数据
-        await addUserInfo(message)
-        // 添加完成 取出账号密码 并关联数据
-        const accountObj = generateAccountPassword(userID)
-        // 与之前的数据进行关联
-        await associatedUserInfo(userID, accountObj)
-        body = `账号：${accountObj.account}
+        if (!userInfo) {
+          body = '账号只能获取1次,您之前已经获取过了,若忘记账号密码,请回复”找回密码“'
+        } else {
+          // 没有账号  添加数据
+          await addUserInfo(message)
+          // 添加完成 取出账号密码 并关联数据
+          const accountObj = generateAccountPassword(userID)
+          // 与之前的数据进行关联
+          await associatedUserInfo(userID, accountObj)
+          body = `账号：${accountObj.account}
 密码：${accountObj.pwd}
 登录网址：http://clumsybird.work(PC端打开)
 该账号与您微信已自动绑定,将链接发送至本窗口也可下载。
 tips:请先使用此账号密码登录,登录后可修改账号密码,方便您记忆~
 `
         }
-      }else if(/http/.test(message.Content)){
-        const url = await wxGongZhongDown(userID, message.Content)
-        if(!url) {
+      } else if (/http/.test(message.Content)) {
+        const info = message.Content
+        if (info.includes('699pic') || info.includes('nipic')) {
+          body = '公众号不支持昵图、摄图两个站点，请到网页进行下载哦~'
+          ctx.type = 'application/xml'
+          ctx.body = tmpl(body || ctx.body, message)
+          return
+        } else if (info.includes('//m.')) {
+          body = '不支持手机端复制的链接，请复制PC端链接'
+          ctx.type = 'application/xml'
+          ctx.body = tmpl(body || ctx.body, message)
+          return
+        }
+        const url = await wxGongZhongDown(userID, info)
+        if (!url) {
           body = '服务器错误，请联系管理员~'
-        }else if(url.includes('账号')){
+        } else if (url.includes('账号')) {
           body = url
-        }else{
+        } else if (url.includes('http')) {
           body = `请点击下方连接
 
 ${url}
 
 【链接有有效期,请抓紧使用】`
+        } else {
+          body = url
         }
-      }else if(/帮助/.test(message.Content)){
-          body = await getWvHelp()
-      }else {
+      } else if (/帮助/.test(message.Content)) {
+        body = await getWvHelp()
+      } else if (/找回密码/.test(message.Content)) {
+        body = await getUserNamePwd(userID)
+      } else {
         body = '暂不支持智能回复，请点击右下角联系公众号运营管理员，谢谢支持！'
       }
     } else if (msgType === 'event') {
@@ -84,9 +100,9 @@ ${url}
         // 关注后扫码
         case 'SCAN':
           body = '扫码成功'
-        break
+          break
       }
-    }else {
+    } else {
       body = '无法识别您的信息'
     }
     // if (msgType === 'event') {
@@ -101,7 +117,7 @@ ${url}
     //       body = '扫码成功'
     //       break
     //   }
-      
+
     //   // if (!!eventKey) {
     //   //   console.log(eventKey);
     //   //   // 有场景值（扫了我们生成的二维码）
@@ -164,25 +180,25 @@ ${url}
   }
 }
 
-async function subscribe (message) {
+async function subscribe(message) {
   let userID = message.FromUserName
   if (message.Event === 'subscribe') {
     // console.log(userID + '关注了')
-    const helpInfo = await DB.find('otherInfo', { '_id':ObjectId('602679a622072f47504aca4c') })
+    const helpInfo = await DB.find('otherInfo', { '_id': ObjectId('602679a622072f47504aca4c') })
     return helpInfo[0].helpInfo
   } else {
     // 用户取消关注后我们不能再通过微信的接口拿到用户信息，
     // 如果要记录用户信息，需要从我们自己的用户记录里获取该信息。
     // 所以建议创建用户时除了unionid，最好把openid也保存起来。
     // console.log(userID + '取关了')
-    DB.remove('userInfo',{ 'userId':userID })
+    DB.remove('userInfo', { 'userId': userID })
     // 后期会发送邮件
   }
 }
 
 // const templetData = fs.readFileSync(pathResolve(__dirname, '../vendor/qrcode-templet.html'))
 
-async function createQRCodeMB (ctx, next) {
+async function createQRCodeMB(ctx, next) {
   // let userID = ctx.query.userID
   let type = +ctx.query.type
   let errno = 0
@@ -209,7 +225,7 @@ async function createQRCodeMB (ctx, next) {
         timeout=${responseDate.expiresIn},width=100,height=100</script>`
 
       // ctx.body = templetValue + templetData.toString('utf-8')
-      ctx.body = { 
+      ctx.body = {
         code: 1,
         id: responseDate.id,
         expiresIn: responseDate.expiresIn,
@@ -232,13 +248,13 @@ async function createQRCodeMB (ctx, next) {
 async function sweepVerificationCode(ctx, next) {
   let eventKey = ctx.query.id
   const openId = await redis.hget(eventKey, 'openID')
-  if(!openId) {
-    ctx.body={ errno: 1 }
+  if (!openId) {
+    ctx.body = { errno: 1 }
     return
   }
-  const userInfo = await DB.find('userInfo', {"wxInfo.openId": openId})
-  if(!userInfo.length){
-    ctx.body={ errno: 1 }
+  const userInfo = await DB.find('userInfo', { "wxInfo.openId": openId })
+  if (!userInfo.length) {
+    ctx.body = { errno: 1 }
     return
   }
   // 将用户名编码
@@ -248,8 +264,8 @@ async function sweepVerificationCode(ctx, next) {
   ctx.cookies.set('openID', openId, cookieConfig)
   ctx.cookies.set('avatar', userInfo[0].wxInfo.avatar, cookieConfig)
   ctx.cookies.set('name', userName, cookieConfig)
-  ctx.body={
-    errno:0
+  ctx.body = {
+    errno: 0
   }
 }
 

@@ -62,7 +62,7 @@ async function mizhi(reqData, cookie) {
         }
       })
       if(!res) resolve({})
-      downurl = res.replace('https://down.51miz.com', 'http://clumsybird.work:3001')
+      downurl = res.replace('https://down.51miz.com', 'http://yuanxiaoshen.com:3002')
       resolve(downurl)
     } catch (error) {
       reject(error)
@@ -109,7 +109,7 @@ async function qianku(reqData, cookie) {
       }else if(tag === 'sheyingtu'){
         url = `https://dl.588ku.com/down/pic?callback=handleResponse&type=10&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fsheyingtu%2F0-0-default-0-1%2F&video_senses=1&_=${time}`
       }else if(tag === 'uiweb'){
-        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=9&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Fui%2F0-0-default-0-0-0-1%2F&video_senses=1&_=${time}`
+        url = `https://dl.588ku.com/down/${downType}?callback=handleResponse&type=9&picid=${d}&refererUrl=&video_senses=1&_=${time}`
       }else if(tag === 'ycaudio'){
         url = `https://dl.588ku.com/down/rar?callback=handleResponse&type=8&picid=${d}&refererUrl=https%3A%2F%2F588ku.com%2Faudio%2F0-0-0-0-0-0-default-1%2F&video_senses=1&_=${time}`
       }else if(tag === 'video') {
@@ -172,7 +172,9 @@ async function baotu(reqData, cookie) {
   const url = `https://ibaotu.com/?m=downloadopen&a=open&id=${d}&down_type=1&&attachment_id=`
   return new Promise(async (resolve, reject) => {
     try {
-      const ip = '183.197.69.149'
+      const ipInfo = await DB.find('otherInfo', { _id:ObjectId('') })
+      const ip = ipInfo[0].ip
+      console.log(ip);
       const res = await request({
         url: url,
         maxRedirects: 0,
@@ -289,7 +291,7 @@ async function nitu(ctx) {
       const userInfo = await DB.find('userInfo', {"_id":ObjectId(userId)})
       const userNitufen = userInfo[0].webInfo.nitufen
       if (userNitufen < nitufen){
-        resolve('昵图分不足，快去获取赞助版呐')
+        resolve('昵图分不足，请点击【充值赞助】')
         return
       }
       const res = await request({
@@ -432,7 +434,7 @@ async function zhongtu(reqData, cookie) {
       })
       console.log(res);
       if(!res.data) resolve({})
-      const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://clumsybird.work:3001')
+      const downUrl = res.data.data.url.replace('https://imgpp.ztupic.com', 'http://yuanxiaoshen.com:3002')
       resolve(downUrl)
     } catch (error) {
       reject(error)
