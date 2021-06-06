@@ -73,7 +73,7 @@ async function validateMember(ctx, type, tag = 'web') {
       // 解析用户是普通版本 解析的是免费
       if (memberType === 0 && freeWebList.includes(urlType)) {
         const cur = totalWeb.get(urlType)
-        if(userInfo[0].webInfo[cur] <= 0) {
+        if(userInfo[0].webInfo[cur] <= 0 && allDownNum<=0) {
           resolve({ sign:1004 })
         }else{
           resolve({ sign:1005, webName:cur })

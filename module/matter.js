@@ -318,18 +318,17 @@ async function nitu(ctx) {
 // 90设计
 async function sheji90(reqData, cookie) {
   const { d } = reqData
-  const url = 'http://90sheji.com/index.php?m=inspireAjax&a=getDownloadLink'
+  const url = `http://90sheji.com/download/link/${d}`
   return new Promise(async (resolve, reject) => {
     try {
       const res = await request({
         url: url,
-        method: 'POST',
+        method: 'GET',
         headers: {
           Cookie: cookie,
           'X-Requested-With': 'XMLHttpRequest',
-          'Referer': `http://90sheji.com/?m=Inspire&a=download&id=${d}`
-        },
-        data: `id=${d}`
+          'Referer': `http://90sheji.com/download/${d}.html`
+        }
       })
       if(!res.link) resolve({})
       resolve(res.link)
