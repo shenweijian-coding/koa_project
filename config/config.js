@@ -2,8 +2,8 @@
 // 数据库
 const app = {
   //dbUrl: 'mongodb://127.0.0.1:27017',
-  dbUrl: 'mongodb://nodejs:swj250176@1.15.123.213:27017',
-  dbName:'dbSuCai'
+  dbUrl: '',
+  dbName:''
 }
 // cookie
 const cookieConfig = {
